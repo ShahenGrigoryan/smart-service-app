@@ -1,11 +1,13 @@
 import { Toast } from 'native-base';
 import {
+  ADD_TASK_FILE_START,
+  ADD_TASK_FILE_SUCCESS,
   CHECKLIST_FAILURE,
   CREATE_TASK_COMMENT_SUCCESS,
   GET_CURRENT_TASK_START,
   GET_CURRENT_TASK_SUCCESS, GET_TASK_FILES_SUCCESS, GET_TASKS_START,
   GET_TASKS_SUCCESS,
-  NULLIFY,
+  NULLIFY, REMOVE_TASK_FILE_SUCCESS,
   UPDATE_TASK_CHECKLIST_ITEM_SUCCESS,
   UPDATE_TASK_SUCCESS,
 } from './tasks.actions';
@@ -15,6 +17,7 @@ const initialState = {
   current_task: {},
   loading: false,
   checkListLoading: false,
+  files_in_que: [],
 };
 
 const tasksReducer = (state = initialState, action) => {
@@ -43,6 +46,11 @@ const tasksReducer = (state = initialState, action) => {
     }
     case GET_TASKS_START: {
       return { ...state, filter: action.filter };
+    }
+    case ADD_TASK_FILE_START: {
+      const files_in_que = state.files_in_que.length
+        ? [...state.files_in_que, action.file] : [action.file];
+      return { ...state, files_in_que };
     }
     case UPDATE_TASK_CHECKLIST_ITEM_SUCCESS: {
       const { newCheckListItem, taskTodoId, todoItemId } = action.checkListItem;
@@ -79,6 +87,19 @@ const tasksReducer = (state = initialState, action) => {
         loading: false,
         checkListLoading: false,
       };
+    }
+    case ADD_TASK_FILE_SUCCESS: {
+      Toast.show({
+        text: 'Файл успешно добавлен!', type: 'success', position: 'top', style: { top: 30 }, textStyle: { textAlign: 'center' },
+      });
+      const newQueFiles = state.files_in_que.filter((item) => item.name !== action.file.name);
+      return { ...state, files_in_que: newQueFiles };
+    }
+    case REMOVE_TASK_FILE_SUCCESS: {
+      Toast.show({
+        text: 'Файл успешно удален!', type: 'success', position: 'top', style: { top: 30 }, textStyle: { textAlign: 'center' },
+      });
+      return { ...state };
     }
     default: return state;
   }

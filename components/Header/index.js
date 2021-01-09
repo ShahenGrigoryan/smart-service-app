@@ -81,6 +81,7 @@ const AppHeader = ({ menuOpen }) => {
     dispatch(getTasksStart(token, filter));
   };
 
+
   return (
     <ComponentsBackground>
       <Header style={{ ...HeaderStyles.root, elevation: isDesktop || isTasks ? 0 : 1 }}>

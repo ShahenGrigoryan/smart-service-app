@@ -12,6 +12,10 @@ export const UPDATE_TASK_START = 'UPDATE_TASK_START';
 export const UPDATE_TASK_SUCCESS = 'UPDATE_TASK_SUCCESS';
 export const GET_TASK_FILES_START = 'GET_TASK_FILES_START';
 export const GET_TASK_FILES_SUCCESS = 'GET_TASK_FILES_SUCCESS';
+export const ADD_TASK_FILE_START = 'ADD_TASK_FILE_START';
+export const ADD_TASK_FILE_SUCCESS = 'ADD_TASK_FILE_SUCCESS';
+export const REMOVE_TASK_FILE_START = 'REMOVE_TASK_FILE_START';
+export const REMOVE_TASK_FILE_SUCCESS = 'REMOVE_TASK_FILE_SUCCESS';
 
 export const getTasksSuccess = (tasks) => ({
   type: GET_TASKS_SUCCESS,
@@ -82,4 +86,25 @@ export const updateTaskSuccess = (updatedTask) => ({
 
 export const nullify = () => ({
   type: NULLIFY,
+});
+
+export const addTaskFileStart = ({ file, taskId, token }) => ({
+  type: ADD_TASK_FILE_START,
+  file,
+  taskId,
+  token,
+});
+export const addTaskFileSuccess = (file) => ({
+  type: ADD_TASK_FILE_SUCCESS,
+  file,
+});
+export const removeTaskFileStart = ({ taskId, fileId, token }) => ({
+  type: REMOVE_TASK_FILE_START,
+  fileId,
+  taskId,
+  token,
+});
+export const removeTaskFileSuccess = (file) => ({
+  type: REMOVE_TASK_FILE_SUCCESS,
+  file,
 });

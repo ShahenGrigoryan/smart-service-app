@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingHorizontal: 5,
     paddingVertical: 5,
+    zIndex:50
   },
   addButton: {
     height: 30,

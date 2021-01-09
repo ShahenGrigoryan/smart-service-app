@@ -1,11 +1,10 @@
 import React from 'react';
-import { Image } from 'react-native';
+import { Image, Dimensions } from 'react-native';
 import { useSelector } from 'react-redux';
 import PagesBg from '../../assets/images/pagesBg.jpg';
 import Loader from '../UI/Loader';
-import NotFound from '../NotFound';
 
-const PagesBackground = ({ children, items }) => {
+const PagesBackground = ({ children }) => {
   const isLoading = useSelector((state) => state.pages?.loading);
 
   return (
@@ -13,7 +12,13 @@ const PagesBackground = ({ children, items }) => {
       <Image
         source={PagesBg}
         style={{
-          position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, height: '100%',
+          position: 'absolute',
+          left: 0,
+          width: '100%',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          height: '100%',
         }}
       />
       {isLoading && <Loader noIcon />}

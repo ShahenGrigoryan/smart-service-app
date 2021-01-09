@@ -5,8 +5,8 @@ const FONT_SIZE = Dimensions.get('window').width < 360 ? 9 : 10;
 const styles = StyleSheet.create({
   root: {
     backgroundColor: 'transparent',
-    height: 'auto',
     position: 'relative',
+    height: 60,
   },
   button: {
     backgroundColor: 'transparent',

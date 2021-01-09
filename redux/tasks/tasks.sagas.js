@@ -1,11 +1,18 @@
 import {
   put, takeLatest, all, call,
 } from 'redux-saga/effects';
+import * as FileSystem from 'expo-file-system';
+import { Toast } from 'native-base';
 import * as Api from '../../api/tasks';
 import * as TasksActions from './tasks.actions';
 import * as PageActions from '../pages/pages.actions';
 import * as UserActions from '../user/user.actions';
-import { updateTaskCheckListItemSuccess, updateTaskSuccess } from './tasks.actions';
+import {
+  addTaskFileSuccess,
+  removeTaskFileSuccess,
+  updateTaskCheckListItemSuccess,
+  updateTaskSuccess,
+} from './tasks.actions';
 
 function* getTasks({ token, filter }) {
   yield put(PageActions.startLoading());
@@ -105,6 +112,46 @@ function* updateTask({ token, body, id }) {
   }
 }
 
+function* addTaskFile({ token, taskId, file }) {
+  try {
+    yield put(PageActions.startLoading());
+    const base64 = yield FileSystem.readAsStringAsync(file?.uri, { encoding: FileSystem.EncodingType.Base64 });
+    const ext = file?.name.slice(file.name.indexOf('.') + 1);
+    console.log('ext', ext);
+    const data = JSON.stringify({
+      name: file.name,
+      content_type: `application/${ext}`,
+      attachment: `data:application/${ext};base64,${base64}`,
+    });
+    console.log('data', data);
+    const newFile = yield Api.addFile({ token, taskId, data });
+    yield put(addTaskFileSuccess(newFile));
+    yield put(PageActions.endLoading());
+  } catch (e) {
+    yield put(PageActions.endLoading());
+    if (e?.response?.status === 401) {
+      yield put(UserActions.loginFailure(e.message));
+    } else {
+      yield put(PageActions.pageFailure(`${e.message}`));
+    }
+  }
+}
+function* removeTaskFile({ token, taskId, fileId }) {
+  try {
+    yield put(PageActions.startLoading());
+    const newFile = yield Api.removeFile({ token, taskId, fileId });
+    yield put(removeTaskFileSuccess(newFile));
+    yield put(PageActions.endLoading());
+  } catch (e) {
+    yield put(PageActions.endLoading());
+    if (e?.response?.status === 401) {
+      yield put(UserActions.loginFailure(e.message));
+    } else {
+      yield put(PageActions.pageFailure(`${e.message}`));
+    }
+  }
+}
+
 function* getTasksStart() {
   yield takeLatest(TasksActions.GET_TASKS_START, getTasks);
 }
@@ -124,6 +171,12 @@ function* updateTaskStart() {
 function* getFilesStart() {
   yield takeLatest(TasksActions.GET_TASK_FILES_START, getTaskFiles);
 }
+function* addTaskFileStart() {
+  yield takeLatest(TasksActions.ADD_TASK_FILE_START, addTaskFile);
+}
+function* removeTaskFileStart() {
+  yield takeLatest(TasksActions.REMOVE_TASK_FILE_START, removeTaskFile);
+}
 
 function* tasksSaga() {
   yield all([
@@ -133,6 +186,8 @@ function* tasksSaga() {
     call(updateCheckListItemStart),
     call(updateTaskStart),
     call(getFilesStart),
+    call(addTaskFileStart),
+    call(removeTaskFileStart),
   ]);
 }
 

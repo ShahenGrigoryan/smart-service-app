@@ -7,10 +7,10 @@ import * as PageActions from '../../../redux/pages/pages.actions';
 import PagesBackground from '../../../components/Containers/PagesBackground';
 import { getChecksStart } from '../../../redux/checks/checks.actions';
 import NotFound from '../../../components/NotFound';
+import PageWrapper from '../../../components/Containers/PageWrapper';
 
 const Checks = ({ navigation }) => {
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.pages.loading);
   const token = useSelector((state) => state?.user?.token);
   const checks = useSelector((state) => state?.checks?.items);
 
@@ -22,22 +22,16 @@ const Checks = ({ navigation }) => {
   }, [navigation]);
   useEffect(() => {
     dispatch(getChecksStart(token));
+    console.log('Bearer:',token);
   }, []);
   return (
-
-    <Content refreshControl={(
-      <RefreshControl
-        refreshing={isLoading}
-        onRefresh={() => dispatch(getChecksStart(token))}
-      />
-      )}
+    <PageWrapper
+      onRefresh={() => dispatch(getChecksStart(token))}
     >
-      <PagesBackground items={checks}>
-        {checks?.length ? checks?.map((item) => (
-          <Check navigation={navigation} key={item.id} itemInfo={item} />
-        )) : <NotFound />}
-      </PagesBackground>
-    </Content>
+      {checks?.length ? checks?.map((item) => (
+        <Check navigation={navigation} key={item.id} itemInfo={item} />
+      )) : <NotFound />}
+    </PageWrapper>
 
   );
 };

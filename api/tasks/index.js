@@ -69,3 +69,22 @@ export const getTaskFiles = async (token, taskId) => {
   const filesUrl = `${baseUrl}/tasks/${taskId}/task_attachments`;
   return get(token, filesUrl);
 };
+
+export const addFile = ({ token, taskId, data }) => {
+  const url = `${baseUrl}/tasks/${taskId}/task_attachments`;
+  return axios.post(url, data, {
+    headers: {
+      Authorization: `Bearer: ${token}`,
+      'Content-type': 'application/json',
+    },
+  });
+};
+
+export const removeFile = ({ token, taskId, fileId }) => {
+  const url = `${baseUrl}/tasks/${taskId}/task_attachments/${fileId}`;
+  return axios.delete(url, {
+    headers: {
+      Authorization: `Bearer: ${token}`,
+    },
+  });
+};

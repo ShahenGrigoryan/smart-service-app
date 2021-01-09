@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     paddingVertical: 10,
     width: '100%',
-
+    height: 55,
   },
   allButton: {
     borderColor: allButtonColor,

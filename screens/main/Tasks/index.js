@@ -11,6 +11,7 @@ import ContainerStyles from '../../../globalStyles/container';
 import PagesBackground from '../../../components/Containers/PagesBackground';
 import { getTasksStart } from '../../../redux/tasks/tasks.actions';
 import NotFound from '../../../components/NotFound';
+import PageWrapper from '../../../components/Containers/PageWrapper';
 
 const Tasks = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -29,23 +30,13 @@ const Tasks = ({ navigation }) => {
 
   return (
 
-    <Content
-      refreshControl={(
-        <RefreshControl
-          refreshing={isLoading}
-          onRefresh={() => dispatch(getTasksStart(token))}
-        />
-)}
-    >
-      <PagesBackground tasks items={tasks}>
-        <View style={ContainerStyles.root}>
-          {tasks?.length
-            ? tasks?.map((item) => <Task navigation={navigation} taskInfo={item} key={item.id} />)
-            : <NotFound />}
-        </View>
-
-      </PagesBackground>
-    </Content>
+    <PageWrapper onRefresh={() => dispatch(getTasksStart(token))}>
+      <View style={ContainerStyles.root}>
+        {tasks?.length
+          ? tasks?.map((item) => <Task navigation={navigation} taskInfo={item} key={item.id} />)
+          : <NotFound />}
+      </View>
+    </PageWrapper>
   );
 };
 
