@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { baseUrl } from '../api-config';
 import { get, post, put } from '../helpers';
 
@@ -24,4 +25,28 @@ export const createTicketComment = async (token, ticketId, comment) => {
 export const updateTicket = async ({ token, id, body }) => {
   const url = `${baseUrl}/tickets/${id}`;
   return put({ token, body, url });
+};
+
+export const getTicketFiles = async (token, ticketId) => {
+  const filesUrl = `${baseUrl}/tickets/${ticketId}/ticket_attachments`;
+  return get(token, filesUrl);
+};
+
+export const addFile = ({ token, ticketId, data }) => {
+  const url = `${baseUrl}/tickets/${ticketId}/ticket_attachments`;
+  return axios.post(url, data, {
+    headers: {
+      Authorization: `Bearer: ${token}`,
+      'Content-type': 'application/json',
+    },
+  });
+};
+
+export const removeFile = ({ token, ticketId, fileId }) => {
+  const url = `${baseUrl}/tickets/${ticketId}/ticket_attachments/${fileId}`;
+  return axios.delete(url, {
+    headers: {
+      Authorization: `Bearer: ${token}`,
+    },
+  });
 };

@@ -4,20 +4,26 @@ import {
   Toast,
 } from 'native-base';
 import {
-  TouchableOpacity, Image, RefreshControl,
+  TouchableOpacity
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
 import { useDispatch, useSelector } from 'react-redux';
+import * as DocumentPicker from 'expo-document-picker';
 import AppCardStyles from './styles';
-import CameraWrapper from '../../../components/Containers/CameraWrapper';
-import { getTime, getAssigneeObject } from '../../../utils';
-import { getCurrentTicketStart, createTicketCommentStart } from '../../../redux/tickets/tickets.actions';
-import PageWrapper from '../../../components/Containers/PageWrapper';
+import CameraWrapper from '../../../../components/Containers/CameraWrapper';
+import { getAssigneeObject } from '../../../../utils';
+import {
+  getCurrentTicketStart,
+  createTicketCommentStart,
+  addTicketFileStart,
+} from '../../../../redux/tickets/tickets.actions';
+import PageWrapper from '../../../../components/Containers/PageWrapper';
+import Comment from '../../../../components/UI/Comment/Comment';
 
 const TicketCard = ({ navigation, route }) => {
   const { ticket } = route.params;
   const [comment, setComment] = useState('');
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   const current_ticket = useSelector((state) => state.tickets.current_ticket);
   const token = useSelector((state) => state.user.token);
@@ -29,20 +35,23 @@ const TicketCard = ({ navigation, route }) => {
     { text: 'Закрыть' },
   ];
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.pages.loading);
-  const [image, setImage] = useState('');
   const [status, setStatus] = useState(statuses[0]);
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    console.log(image);
-    if (!result.cancelled) {
-      setImage(result.uri);
+  const addFile = (file) => {
+    if (cameraOpen) {
+      setCameraOpen(false);
+    }
+    dispatch(addTicketFileStart({ file, ticketId: current_ticket?.id, token }));
+  };
+  const pickFile = async () => {
+    try {
+      const file = await DocumentPicker.getDocumentAsync({
+        type: '*/*',
+      });
+      if (file.type === 'success') {
+       addFile(file)
+      }
+    } catch (e) {
+      console.log('error==', e);
     }
   };
   useEffect(() => {
@@ -55,7 +64,6 @@ const TicketCard = ({ navigation, route }) => {
       }
     });
   }, [current_ticket]);
-  const [cameraOpen, setCameraOpen] = useState(false);
 
   const createComment = () => {
     const clearComment = comment.trim();
@@ -74,7 +82,7 @@ const TicketCard = ({ navigation, route }) => {
   };
 
   return (
-    <CameraWrapper open={cameraOpen}>
+    <CameraWrapper onAdd={addFile} open={cameraOpen}>
       <PageWrapper
         onRefresh={() => dispatch(getCurrentTicketStart(token, ticket.id))}
       >
@@ -153,58 +161,30 @@ const TicketCard = ({ navigation, route }) => {
               </Text>
               <View style={AppCardStyles.content}>
                 {current_ticket?.comments?.map((item, index, array) => (
-                  <View
-                    key={item.id}
-                    style={{
-                      position: 'relative',
-                      paddingVertical: 15,
-                      marginVertical: 3,
-                      paddingHorizontal: 5,
-                      borderColor: AppCardStyles.content.color,
-                      borderWidth: 1,
-                      borderRadius: 10,
-                      borderBottomLeftRadius: index !== array.length - 1
-                                && array.length > 1 ? 0 : 10,
-                      borderTopLeftRadius: index !== 0 ? 0 : 10,
-                      borderTopRightRadius: index !== 0 ? 0 : 10,
-                      borderBottomEndRadius: index !== array.length - 1 ? 0 : 10,
-                    }}
-                  >
-                    <View style={{ position: 'relative' }}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
-                        <Image
-                          source={{
-                            uri: item?.user?.avatar
-                              ? item.user.avatar
-                              : 'https://vdostavka.ru/wp-content/uploads/2019/05/no-avatar.png',
-                          }}
-                          style={{
-                            width: 20, height: 20, borderRadius: 50, marginRight: 10,
-                          }}
-                        />
-                        <Text style={{ fontWeight: 'bold' }}>
-                          {item.user?.name ? item.user.name : 'Нет имени'}
-                        </Text>
-                      </View>
-                    </View>
-                    <Text style={{
-                      color: '#a8a8a8', fontSize: 13, position: 'absolute', top: 3, right: 5,
-                    }}
-                    >
-                      {getTime(item.created_at)}
-                    </Text>
-
-                    <Text key={item.id}>{item.comment}</Text>
-                  </View>
+                  <Comment item={item} index={index} comments={array} key={item.id} />
                 ))}
               </View>
             </Card>
           ) : <Text>Нет комментарий</Text>}
         </View>
-
+        <View style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingHorizontal: 23,
+          marginVertical: 10,
+        }}
+        >
+          <Button
+            onPress={() => navigation.navigate('ApplicationFiles',
+              { data: current_ticket })}
+            style={{ borderRadius: 10 }}
+          >
+            <Text>Файлы</Text>
+          </Button>
+        </View>
         <View>
           <View style={{ flexDirection: 'row', paddingHorizontal: 10 }}>
-            <TouchableOpacity onPress={pickImage}>
+            <TouchableOpacity onPress={pickFile}>
               <MaterialIcons name="attach-file" size={35} color="black" />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setCameraOpen(true)}>

@@ -19,7 +19,6 @@ const ItemPreview = ({
   };
 
   return (
-
     <View style={ItemPreviewStyles.root}>
       <View style={ItemPreviewStyles.dateView}>
         <Text style={{ ...ItemPreviewStyles.week, color }}>

@@ -7,18 +7,18 @@ import { TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import * as DocumentPicker from 'expo-document-picker';
-import AppCardStyles from '../ApplicationCard/styles';
-import CameraWrapper from '../../../components/Containers/CameraWrapper';
-import CardStyles from '../../../globalStyles/card';
-import { getDate, getTime } from '../../../utils';
+import AppCardStyles from '../../Applications/Card/styles';
+import CameraWrapper from '../../../../components/Containers/CameraWrapper';
+import CardStyles from '../../../../globalStyles/card';
+import { getDate, getTime } from '../../../../utils';
 import {
   getCurrentTaskStart,
   createTaskCommentStart,
   updateTaskStart,
   addTaskFileStart,
-} from '../../../redux/tasks/tasks.actions';
-import Comment from '../../../components/UI/Comment/Comment';
-import PageWrapper from '../../../components/Containers/PageWrapper';
+} from '../../../../redux/tasks/tasks.actions';
+import Comment from '../../../../components/UI/Comment/Comment';
+import PageWrapper from '../../../../components/Containers/PageWrapper';
 
 const TaskCard = ({ navigation, route }) => {
   const { task } = route.params;
@@ -33,23 +33,28 @@ const TaskCard = ({ navigation, route }) => {
     { text: 'Отменён', name: 'canceled', color: '#ec4034' },
     { text: 'Закрыть' },
   ];
-  const isLoading = useSelector((state) => state.pages.loading);
-  const [image, setImage] = useState('');
   const dispatch = useDispatch();
   const [status, setStatus] = useState(statuses[0]);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const addFile = (file) => {
+    if (cameraOpen) {
+      setCameraOpen(false);
+    }
+    dispatch(addTaskFileStart({ file, taskId: current_task?.id, token }));
+  };
   const pickFile = async () => {
     try {
       const file = await DocumentPicker.getDocumentAsync({
         type: '*/*',
       });
-      console.log(file.type);
       if (file.type === 'success') {
-        dispatch(addTaskFileStart({ file, taskId: current_task?.id, token }));
+        addFile(file);
       }
     } catch (e) {
       console.log('error==', e);
     }
   };
+
   useEffect(() => {
     dispatch(getCurrentTaskStart(token, task.id));
   }, []);
@@ -60,7 +65,6 @@ const TaskCard = ({ navigation, route }) => {
       }
     });
   }, [current_task]);
-  const [cameraOpen, setCameraOpen] = useState(false);
 
   const createComment = () => {
     const clearComment = comment.trim();
@@ -91,7 +95,7 @@ const TaskCard = ({ navigation, route }) => {
   };
 
   return (
-    <CameraWrapper open={cameraOpen}>
+    <CameraWrapper onAdd={addFile} open={cameraOpen}>
       <PageWrapper
         onRefresh={() => dispatch(getCurrentTaskStart(token, task.id))}
       >
@@ -195,7 +199,7 @@ const TaskCard = ({ navigation, route }) => {
           }}
           >
             <Button
-              onPress={() => navigation.navigate('Files',
+              onPress={() => navigation.navigate('TaskFiles',
                 { data: task })}
               style={{ borderRadius: 10 }}
             >

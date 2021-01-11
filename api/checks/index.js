@@ -56,3 +56,27 @@ export const updateCheck = async ({ token, id, body }) => {
     },
   });
 };
+
+export const getCheckFiles = async (token, checkId) => {
+  const filesUrl = `${baseUrl}/entity_tasks/${checkId}/entity_task_attachments`;
+  return get(token, filesUrl);
+};
+
+export const addFile = ({ token, checkId, data }) => {
+  const url = `${baseUrl}/entity_tasks/${checkId}/entity_task_attachments`;
+  return axios.post(url, data, {
+    headers: {
+      Authorization: `Bearer: ${token}`,
+      'Content-type': 'application/json',
+    },
+  });
+};
+
+export const removeFile = ({ token, checkId, fileId }) => {
+  const url = `${baseUrl}/entity_tasks/${checkId}/entity_task_attachments/${fileId}`;
+  return axios.delete(url, {
+    headers: {
+      Authorization: `Bearer: ${token}`,
+    },
+  });
+};

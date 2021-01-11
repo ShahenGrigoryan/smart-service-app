@@ -3,24 +3,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Text, View } from 'native-base';
 import { TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import CheckListStyles from '../CheckLists/styles';
-import AppCardStyles from '../ApplicationCard/styles';
-import { getTaskFilesStart } from '../../../redux/tasks/tasks.actions';
-import PageWrapper from '../../../components/Containers/PageWrapper';
-import File from '../../../components/UI/File';
+import CheckListStyles from '../../CheckLists/styles';
+import AppCardStyles from '../Card/styles';
+import PageWrapper from '../../../../components/Containers/PageWrapper';
+import File from '../../../../components/UI/File';
+import { getTicketFilesStart, removeTicketFileStart } from '../../../../redux/tickets/tickets.actions';
 
-const Files = ({ navigation, route }) => {
+const ApplicationFiles = ({ navigation, route }) => {
   const { data } = route?.params;
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.pages.loading);
   const token = useSelector((state) => state?.user?.token);
-  const files = useSelector((state) => state.tasks?.current_task?.files);
+  const files = useSelector((state) => state.tickets?.current_ticket?.files);
   useEffect(() => {
-    dispatch(getTaskFilesStart(token, data?.id));
+    dispatch(getTicketFilesStart(token, data?.id));
   }, []);
   return (
     <PageWrapper
-      onRefresh={() => dispatch(getTaskFilesStart(token, data?.id))}
+      onRefresh={() => dispatch(getTicketFilesStart(token, data?.id))}
     >
       <View style={CheckListStyles.header}>
         <TouchableOpacity style={AppCardStyles.backButton} onPress={() => navigation.goBack()}>
@@ -28,7 +27,7 @@ const Files = ({ navigation, route }) => {
         </TouchableOpacity>
         <View style={CheckListStyles.headerTextView}>
           <Text style={CheckListStyles.headerText}>
-            Файлы задачи
+            Файлы заявки
           </Text>
           <Text style={CheckListStyles.numberText}>
             №
@@ -39,7 +38,16 @@ const Files = ({ navigation, route }) => {
       </View>
       <View>
         {files?.length ? files?.map((item) => (
-          <File taskId={data?.id} file={item} key={item.id} />
+          <File
+            onRemove={() => dispatch(removeTicketFileStart({
+              fileId: item?.id,
+              token,
+              ticketId: data.id,
+            }))}
+            file={item}
+            style={{ borderColor: '#24b24e' }}
+            key={item.id}
+          />
         )) : (
           <View style={{ justifyContent: 'center', alignItems: 'center', height: 200 }}>
             <Text>
@@ -52,4 +60,4 @@ const Files = ({ navigation, route }) => {
   );
 };
 
-export default Files;
+export default ApplicationFiles;

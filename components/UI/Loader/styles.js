@@ -3,11 +3,17 @@ import { StyleSheet, Dimensions } from 'react-native';
 const styles = StyleSheet.create({
   root: {
     position: 'absolute',
-    zIndex: 9,
+    top: 0,
+    bottom: 0,
+    height: '100%',
+    left: 0,
+    right: 0,
+    zIndex: 30,
     backgroundColor: 'rgba(0,0,0,0.95)',
     width: '100%',
-    height: Dimensions.get('window').height,
+    minHeight: Dimensions.get('window').height,
     justifyContent: 'center',
+    elevation: 10,
   },
 });
 

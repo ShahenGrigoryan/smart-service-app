@@ -5,10 +5,9 @@ import { TouchableOpacity } from 'react-native';
 import { Feather, FontAwesome5, FontAwesome } from '@expo/vector-icons';
 import CameraStyles from '../../globalStyles/camera';
 
-const CameraWrapper = ({ open, children }) => {
+const CameraWrapper = ({ open, children, onAdd = () => null }) => {
   let camera = createRef();
   const [hasPermission, setHasPermission] = useState(null);
-  const [photo, setPhoto] = useState('');
   const [type, setType] = useState(Camera.Constants.Type.back);
   useEffect(() => {
     if (open && !hasPermission) {
@@ -16,14 +15,15 @@ const CameraWrapper = ({ open, children }) => {
         const { status } = await Camera.requestPermissionsAsync();
         setHasPermission(status === 'granted');
       })();
-      console.log(photo);
     }
   }, [open]);
 
   const takePic = async () => {
     if (camera) {
       const pic = await camera.takePictureAsync();
-      setPhoto(pic);
+      console.log('picture', pic);
+      pic.name = `${Date.now()}${pic?.uri?.slice(pic.uri.lastIndexOf('.'))}`;
+      onAdd(pic);
     }
   };
 

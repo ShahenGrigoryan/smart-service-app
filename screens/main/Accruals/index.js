@@ -5,8 +5,8 @@ import {
   Text, View, Grid, Col, Row,
 } from 'native-base';
 import { useDispatch, useSelector } from 'react-redux';
-import AppCardStyles from '../../cards/ApplicationCard/styles';
-import CheckListStyles from '../../cards/CheckLists/styles';
+import AppCardStyles from '../Applications/Card/styles';
+import CheckListStyles from '../CheckLists/styles';
 import AccrualStyles from './styles';
 import MonthPicker from '../../../components/UI/MonthPicker';
 import { getPayrollsStart } from '../../../redux/user/user.actions';

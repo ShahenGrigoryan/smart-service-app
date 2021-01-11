@@ -125,7 +125,8 @@ function* addTaskFile({ token, taskId, file }) {
     });
     console.log('data', data);
     const newFile = yield Api.addFile({ token, taskId, data });
-    yield put(addTaskFileSuccess(newFile));
+    console.log('newFile',newFile.data.data)
+    yield put(addTaskFileSuccess(newFile?.data?.data? newFile.data.data:newFile));
     yield put(PageActions.endLoading());
   } catch (e) {
     yield put(PageActions.endLoading());
@@ -139,8 +140,8 @@ function* addTaskFile({ token, taskId, file }) {
 function* removeTaskFile({ token, taskId, fileId }) {
   try {
     yield put(PageActions.startLoading());
-    const newFile = yield Api.removeFile({ token, taskId, fileId });
-    yield put(removeTaskFileSuccess(newFile));
+    yield Api.removeFile({ token, taskId, fileId });
+    yield put(removeTaskFileSuccess(fileId));
     yield put(PageActions.endLoading());
   } catch (e) {
     yield put(PageActions.endLoading());

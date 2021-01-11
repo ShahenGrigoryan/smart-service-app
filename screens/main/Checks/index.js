@@ -22,7 +22,6 @@ const Checks = ({ navigation }) => {
   }, [navigation]);
   useEffect(() => {
     dispatch(getChecksStart(token));
-    console.log('Bearer:',token);
   }, []);
   return (
     <PageWrapper

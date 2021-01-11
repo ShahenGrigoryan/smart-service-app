@@ -104,7 +104,7 @@ export const removeTaskFileStart = ({ taskId, fileId, token }) => ({
   taskId,
   token,
 });
-export const removeTaskFileSuccess = (file) => ({
+export const removeTaskFileSuccess = (fileId) => ({
   type: REMOVE_TASK_FILE_SUCCESS,
-  file,
+  fileId,
 });

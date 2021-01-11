@@ -6,6 +6,7 @@ import { TouchableOpacity } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateTaskCheckListItemStart } from '../../redux/tasks/tasks.actions';
+import { updateCheckCheckListItemStart } from '../../redux/checks/checks.actions';
 
 const CheckListItem = ({ itemInfo, type }) => {
   const token = useSelector((state) => state.user.token);
@@ -20,13 +21,30 @@ const CheckListItem = ({ itemInfo, type }) => {
         completed_at: !completed_at
           ? new Date(Date.now()).toISOString() : null,
       }));
+    } else {
+      dispatch(updateCheckCheckListItemStart({
+        token,
+        checkTodoId: itemInfo.id,
+        todoItemId,
+        completed_at: !completed_at
+          ? new Date(Date.now()).toISOString() : null,
+      }));
     }
+  };
+  const isAllChecked = (items) => {
+    let count = 0;
+    items.forEach((item) => {
+      if (item?.completed_at) {
+        count++;
+      }
+    });
+    return count === items.length;
   };
   return (
     <Card style={{ paddingHorizontal: 5 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ width: '15%' }}>
-          <CheckBox />
+          <CheckBox checked={isAllChecked(itemInfo?.[type === 'task' ? 'task_todo_items' : 'entity_task_todo_items'])} />
         </View>
         <TouchableOpacity style={{ paddingVertical: 10 }} onPress={() => setOpen(!open)}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -41,7 +59,7 @@ const CheckListItem = ({ itemInfo, type }) => {
       </View>
       {open && (
       <View style={{ paddingHorizontal: '5%', paddingBottom: 10 }}>
-        {itemInfo?.task_todo_items?.map((todoItem) => (
+        {itemInfo?.[type === 'task' ? 'task_todo_items' : 'entity_task_todo_items']?.map((todoItem) => (
           <TouchableOpacity
             onPress={() => updateTodoItem({
               todoItemId: todoItem?.id,

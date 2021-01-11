@@ -92,14 +92,15 @@ const tasksReducer = (state = initialState, action) => {
       Toast.show({
         text: 'Файл успешно добавлен!', type: 'success', position: 'top', style: { top: 30 }, textStyle: { textAlign: 'center' },
       });
-      const newQueFiles = state.files_in_que.filter((item) => item.name !== action.file.name);
+      const newQueFiles = state.files_in_que?.filter((item) => item?.name !== action?.file?.name);
       return { ...state, files_in_que: newQueFiles };
     }
     case REMOVE_TASK_FILE_SUCCESS: {
       Toast.show({
         text: 'Файл успешно удален!', type: 'success', position: 'top', style: { top: 30 }, textStyle: { textAlign: 'center' },
       });
-      return { ...state };
+      const newFiles = state.current_task?.files?.filter((item) => item.id !== action.fileId);
+      return { ...state, current_task: { ...state.current_task, files: newFiles } };
     }
     default: return state;
   }

@@ -13,13 +13,15 @@ import Checks from './screens/main/Checks';
 import Tasks from './screens/main/Tasks';
 import { navigationRef } from './RootNavigation';
 import Greeting from './screens/main/Greeting';
-import ApplicationCard from './screens/cards/ApplicationCard';
-import CheckCard from './screens/cards/CheckCard';
-import TaskCard from './screens/cards/TaskCard';
-import CheckLists from './screens/cards/CheckLists';
+import ApplicationCard from './screens/main/Applications/Card';
+import CheckCard from './screens/main/Checks/Card';
+import TaskCard from './screens/main/Tasks/Card';
+import CheckLists from './screens/main/CheckLists';
 import Accruals from './screens/main/Accruals';
-import Files from './screens/cards/Files';
+import TaskFiles from './screens/main/Tasks/Files';
+import CheckFiles from './screens/main/Checks/Files';
 import { getUserStart } from './redux/user/user.actions';
+import ApplicationFiles from './screens/main/Applications/Files';
 
 const drawerStyles = {
   drawer: {
@@ -76,7 +78,9 @@ const Main = () => {
               <Stack.Screen name="TaskCard" component={TaskCard} />
               <Stack.Screen name="CheckLists" component={CheckLists} />
               <Stack.Screen name="Accruals" component={Accruals} />
-              <Stack.Screen name="Files" component={Files} />
+              <Stack.Screen name="TaskFiles" component={TaskFiles} />
+              <Stack.Screen name="CheckFiles" component={CheckFiles} />
+              <Stack.Screen name="ApplicationFiles" component={ApplicationFiles} />
             </>
           ) : (
             <>

@@ -1,3 +1,4 @@
+
 export const GET_TICKETS_SUCCESS = 'GET_TICKETS_SUCCESS';
 export const GET_TICKETS_START = 'GET_TICKETS_START';
 export const GET_CURRENT_TICKET_START = 'GET_CURRENT_TICKET_START';
@@ -10,6 +11,13 @@ export const CHECKLIST_FAILURE = 'CHECKLIST_FAILURE';
 export const NULLIFY = 'NULLIFY';
 export const UPDATE_TICKET_START = 'UPDATE_TICKET_START';
 export const UPDATE_TICKET_SUCCESS = 'UPDATE_TICKET_SUCCESS';
+export const GET_TICKET_FILES_START = 'GET_TICKET_FILES_START';
+export const GET_TICKET_FILES_SUCCESS = 'GET_TICKET_FILES_SUCCESS';
+export const ADD_TICKET_FILE_START = 'ADD_TICKET_FILE_START';
+export const ADD_TICKET_FILE_SUCCESS = 'ADD_TICKET_FILE_SUCCESS';
+export const REMOVE_TICKET_FILE_START = 'REMOVE_TICKET_FILE_START';
+export const REMOVE_TICKET_FILE_SUCCESS = 'REMOVE_TICKET_FILE_SUCCESS';
+
 
 export const getTicketsSuccess = (tickets) => ({
   type: GET_TICKETS_SUCCESS,
@@ -72,4 +80,34 @@ export const updateTicketSuccess = (updatedTicket) => ({
 
 export const nullify = () => ({
   type: NULLIFY,
+});
+
+export const addTicketFileStart = ({ file, ticketId, token }) => ({
+  type: ADD_TICKET_FILE_START,
+  file,
+  ticketId,
+  token,
+});
+export const addTicketFileSuccess = (file) => ({
+  type: ADD_TICKET_FILE_SUCCESS,
+  file,
+});
+export const removeTicketFileStart = ({ ticketId, fileId, token }) => ({
+  type: REMOVE_TICKET_FILE_START,
+  fileId,
+  ticketId,
+  token,
+});
+export const removeTicketFileSuccess = (fileId) => ({
+  type: REMOVE_TICKET_FILE_SUCCESS,
+  fileId,
+});
+export const getTicketFilesStart = (token, ticket_id) => ({
+  type: GET_TICKET_FILES_START,
+  token,
+  ticket_id,
+});
+export const getTicketFilesSuccess = (files) => ({
+  type: GET_TICKET_FILES_SUCCESS,
+  files,
 });
