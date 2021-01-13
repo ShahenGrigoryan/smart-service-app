@@ -72,6 +72,7 @@ const TaskCard = ({ navigation, route }) => {
       Toast.show({
         text: 'Комментарий не может быть пустым.', type: 'danger', position: 'top', textStyle: { textAlign: 'center' },
       });
+      return null;
     }
     dispatch(createTaskCommentStart({
       token,
@@ -172,12 +173,19 @@ const TaskCard = ({ navigation, route }) => {
             <Text>
               Инициатор:
               {' '}
-              {task?.user?.name ?? '-'}
+              {task?.user?.name || task?.member?.name || '-'}
             </Text>
             <Text>
               Наблюдатель:
               {' '}
-              {task?.member?.name ?? '-'}
+              {' '}
+              {task?.assignees?.map((item, index, array) => (
+                  <Text key={item.id}>
+                    {item.user.name}
+                    {index !== array.length - 1 ? ', ' : ''}
+                    {' '}
+                  </Text>
+              ))}
             </Text>
             <Text style={{ color: 'red' }}>
               Ответственные:

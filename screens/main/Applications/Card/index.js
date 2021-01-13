@@ -4,7 +4,7 @@ import {
   Toast,
 } from 'native-base';
 import {
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -48,7 +48,7 @@ const TicketCard = ({ navigation, route }) => {
         type: '*/*',
       });
       if (file.type === 'success') {
-       addFile(file)
+        addFile(file);
       }
     } catch (e) {
       console.log('error==', e);
@@ -71,6 +71,7 @@ const TicketCard = ({ navigation, route }) => {
       Toast.show({
         text: 'Комментарий не может быть пустым.', type: 'danger', position: 'top', textStyle: { textAlign: 'center' },
       });
+      return null;
     }
     dispatch(createTicketCommentStart({
       token,
@@ -135,16 +136,41 @@ const TicketCard = ({ navigation, route }) => {
             <Text>
               Инициатор:
               {' '}
-              {ticket?.user?.name ?? '-'}
+              {ticket?.user?.name || ticket?.member?.name || '-'}
             </Text>
             <Text>
               Наблюдатель:
               {' '}
-              {getAssigneeObject('supervisor', current_ticket?.assignees)?.user?.name}
+              {' '}
+              {current_ticket?.assignees?.map((item, index, array) => (
+                <Text key={item.id}>
+                  {item?.user?.name || item?.member?.name || '-'}
+                  {index !== array.length - 1 ? ', ' : ''}
+                  {' '}
+                </Text>
+              ))}
             </Text>
             <Text>
               Исполнитель:
-              {getAssigneeObject('organization', current_ticket?.assignees)?.user?.name ?? '-'}
+              {' '}
+              {current_ticket?.assignees?.map((item, index, array) => (
+                <Text key={item.id}>
+                  {item?.user?.name || item?.member?.name || '-'}
+                  {index !== array.length - 1 ? ', ' : ''}
+                  {' '}
+                </Text>
+              ))}
+            </Text>
+            <Text>
+              От заказчика:
+              {' '}
+              {current_ticket?.assignees?.map((item, index, array) => (
+                <Text key={item.id}>
+                  {item?.user?.name || item?.member?.name || '-'}
+                  {index !== array.length - 1 ? ', ' : ''}
+                  {' '}
+                </Text>
+              ))}
             </Text>
           </Card>
           <View style={{

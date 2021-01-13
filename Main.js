@@ -32,14 +32,9 @@ const drawerStyles = {
 const Stack = createStackNavigator();
 const Main = () => {
   const userStore = useSelector((state) => state.user);
-  const { token, user_id } = userStore;
   const visit = useSelector((state) => state.visit);
-  const dispatch = useDispatch();
   const { isLoggedIn } = userStore;
   let _drawer;
-  useEffect(() => {
-    dispatch(getUserStart(token, user_id));
-  }, []);
   const handleMenuOpen = () => {
     _drawer.open();
   };

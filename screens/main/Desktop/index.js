@@ -13,13 +13,14 @@ import { getDesktopItemsStart } from '../../../redux/desktop/desktop.actions';
 import NotFound from '../../../components/NotFound';
 import ItemsWrapper from '../../../components/Containers/ItemsWrapper';
 import PageWrapper from '../../../components/Containers/PageWrapper';
+import { getUserStart } from '../../../redux/user/user.actions';
 
 const Desktop = ({ navigation }) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.token);
   const filter = useSelector((state) => state.desktop.filter);
+  const { user_id } = useSelector((state) => state.user);
   const desktopItems = useSelector((state) => state?.desktop?.items);
-  const isLoading = useSelector((state) => state.pages.loading);
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       dispatch(PageActions.changeRoute('Desktop'));
@@ -28,6 +29,9 @@ const Desktop = ({ navigation }) => {
   }, [navigation]);
   useEffect(() => {
     dispatch(getDesktopItemsStart(token, filter));
+  }, []);
+  useEffect(() => {
+    dispatch(getUserStart(token, user_id));
   }, []);
 
   return (

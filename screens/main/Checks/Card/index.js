@@ -101,11 +101,16 @@ const CheckCard = ({ navigation, route }) => {
             </Text>
 
             <Text style={{ color: '#31afe6', fontWeight: 'bold', fontSize: 18 }}>
+              Инициатор:
+              {' '}
+              {current_check?.user?.name || current_check?.member?.name || '-'}
+            </Text>
+            <Text style={{ color: '#31afe6', fontWeight: 'bold', fontSize: 18 }}>
               Ответственные:
               {' '}
               {current_check?.assignees?.map((item, index, array) => (
                 <React.Fragment key={item.id}>
-                  {item?.user?.name ?? '-'}
+                  {item?.user?.name || item?.member?.name || '-'}
                   {index !== array.length - 1 ? ', ' : ''}
                   {' '}
                 </React.Fragment>
@@ -114,7 +119,15 @@ const CheckCard = ({ navigation, route }) => {
             </Text>
             <Text style={{ color: '#31afe6', fontWeight: 'bold', fontSize: 18 }}>
               От заказчика:
-              {current_check?.customer?.name}
+              {' '}
+              {current_check?.assignees?.map((item, index, array) => (
+                <React.Fragment key={item.id}>
+                  {item?.user?.name || item?.member?.name || '-'}
+                  {index !== array.length - 1 ? ', ' : ''}
+                  {' '}
+                </React.Fragment>
+
+              ))}
             </Text>
             <View style={{
               flexDirection: 'row',
