@@ -17,6 +17,8 @@ import {
 import { getDate, getTime } from '../../../../utils';
 import Comment from '../../../../components/UI/Comment/Comment';
 import PageWrapper from '../../../../components/Containers/PageWrapper';
+import { changeCheckStatus } from '../../../../api/checks';
+import CheckStatusButton from '../../../../components/UI/CheckStatusButton';
 
 const CheckCard = ({ navigation, route }) => {
   const { check } = route.params;
@@ -64,22 +66,41 @@ const CheckCard = ({ navigation, route }) => {
   useEffect(() => {
     dispatch(getCurrentCheckStart(token, checkId));
   }, []);
+  const [status, setStatus] = useState(current_check?.status);
+  useEffect(() => {
+    setStatus(current_check?.status);
+  }, [current_check]);
+  const changeStatus = async () => {
+    try {
+      const newStatus = current_check?.status === 'processing'
+        ? { status: 'finished' } : current_check?.status === 'pending'
+          ? { status: 'processing' } : null;
+      await changeCheckStatus({
+        token,
+        checkId: current_check.id,
+        status: newStatus,
+      });
+      setStatus(newStatus.status);
+    } catch (e) {
+      Toast.show({ text: e.message, type: 'danger', position: 'top' });
+    }
+  };
 
   return (
     <CameraWrapper onAdd={addFile} open={cameraOpen}>
       <PageWrapper
         onRefresh={() => dispatch(getCurrentCheckStart(token, check.id))}
       >
-        <View style={{ ...AppCardStyles.header, justifyContent: 'flex-end', paddingHorizontal: 20 }}>
+        <View style={{
+          ...AppCardStyles.header, justifyContent: 'flex-end', flexWrap: 'wrap', paddingHorizontal: 20,
+        }}
+        >
           <TouchableOpacity style={AppCardStyles.backButton} onPress={() => navigation.goBack()}>
             <MaterialIcons name="arrow-back" size={30} color="black" />
           </TouchableOpacity>
-          <Button style={{ borderRadius: 10, zIndex: -99, position: 'relative' }}>
-            <Text>
-              Начать
-            </Text>
-          </Button>
+          <CheckStatusButton status={status} changeStatus={changeStatus} />
         </View>
+
         <View style={{ ...AppCardStyles.card }}>
           <Card style={AppCardStyles.card}>
             <Text style={CardStyles.number}>

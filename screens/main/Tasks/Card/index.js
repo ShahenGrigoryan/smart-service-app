@@ -10,7 +10,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import AppCardStyles from '../../Applications/Card/styles';
 import CameraWrapper from '../../../../components/Containers/CameraWrapper';
 import CardStyles from '../../../../globalStyles/card';
-import { getDate, getTime } from '../../../../utils';
+import { getAssigneeObject, getDate, getTime } from '../../../../utils';
 import {
   getCurrentTaskStart,
   createTaskCommentStart,
@@ -178,13 +178,12 @@ const TaskCard = ({ navigation, route }) => {
             <Text>
               Наблюдатель:
               {' '}
-              {' '}
-              {task?.assignees?.map((item, index, array) => (
-                  <Text key={item.id}>
-                    {item.user.name}
-                    {index !== array.length - 1 ? ', ' : ''}
-                    {' '}
-                  </Text>
+              {getAssigneeObject('supervisor', current_task?.asignees)?.map((item, index, array) => (
+                <Text key={`supervisor_${index}__`}>
+                  {item}
+                  {index !== array.length - 1 ? ', ' : ''}
+                  {' '}
+                </Text>
               ))}
             </Text>
             <Text style={{ color: 'red' }}>

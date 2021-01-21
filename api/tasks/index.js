@@ -13,8 +13,8 @@ export const getUser = async (token, userId) => {
 };
 
 export const getTasks = async (token, params) => {
-  const tasksUrl = `${baseUrl}/tasks`;
-  return get(token, tasksUrl, params);
+  const tasksUrl = `${baseUrl}/tasks${params}`;
+  return get(token, tasksUrl);
 };
 
 export const getCurrentTask = async (token, id) => {

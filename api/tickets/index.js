@@ -50,3 +50,13 @@ export const removeFile = ({ token, ticketId, fileId }) => {
     },
   });
 };
+
+export const getStatuses = ({ token, ticketId }) => {
+  const url = `https://apitest.mysmartservice.com/api/v1/tickets/${ticketId}/statuses`;
+  return get(token, url);
+};
+
+export const changeStatus = ({ token, ticketId, status }) => {
+  const url = `https://apitest.mysmartservice.com/api/v1/tickets/${ticketId}/status`;
+  return axios.put(url, JSON.stringify(status), { headers: { Authorization: `Bearer: ${token}` } });
+};

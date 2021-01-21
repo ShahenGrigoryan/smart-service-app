@@ -22,8 +22,6 @@ export const getFormDataOptions = (url = '', data = {}) => {
 
 export const get = (token, url, params) => {
   const urlParams = getParamsText(params);
-  console.log('url params', urlParams);
-  console.log(`${url}${urlParams}`);
   return axios.get(`${url}${urlParams}`, {
     headers: {
       Authorization: `Bearer: ${token}`,

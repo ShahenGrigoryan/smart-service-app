@@ -30,6 +30,7 @@ const desktopFilters = [
     name: 'Alarm',
     id: 'alarm',
     params: {
+      startFinishDate: getDate(Date.now()),
       endFinishDate: getDate(Date.now()),
     },
   },
@@ -49,24 +50,22 @@ const AppHeader = ({ menuOpen }) => {
   useEffect(() => {
     setDesktopFilter(storeDesktopFilter ?? desktopFilters[0]);
   }, [storeDesktopFilter]);
-
+  console.log('token', token);
   const tasksFilters = [
     {
       name: 'Мои',
       id: 'my',
-      params: {
-        owner_id: id,
-      },
+      params: `?users[]=${id}&status[]=pending&status[]=processing`,
     },
     {
       name: 'Поручил',
       id: 'instructed',
-      params: null,
+      params: `?owners[]=${id}&status[]=pending&status[]=processing`,
     },
     {
       name: 'Наблюдаю',
       id: 'watching',
-      params: null,
+      params: `?supervisors[]=${id}&status[]=pending&status[]=processing`,
     },
   ];
   const [tasksFilter, setTasksFilter] = useState(storeTasksFilter ?? tasksFilters[0]);
@@ -80,7 +79,6 @@ const AppHeader = ({ menuOpen }) => {
   const applyTaskFilter = (filter) => {
     dispatch(getTasksStart(token, filter));
   };
-
 
   return (
     <ComponentsBackground>

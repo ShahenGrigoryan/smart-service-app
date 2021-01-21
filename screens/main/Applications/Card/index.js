@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, Content, Card, Button, Textarea,
-  Toast,
+  Toast, ActionSheet,
 } from 'native-base';
 import {
   TouchableOpacity,
@@ -9,6 +9,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import * as DocumentPicker from 'expo-document-picker';
+import axios from 'axios';
 import AppCardStyles from './styles';
 import CameraWrapper from '../../../../components/Containers/CameraWrapper';
 import { getAssigneeObject } from '../../../../utils';
@@ -19,6 +20,7 @@ import {
 } from '../../../../redux/tickets/tickets.actions';
 import PageWrapper from '../../../../components/Containers/PageWrapper';
 import Comment from '../../../../components/UI/Comment/Comment';
+import { changeStatus, getStatuses } from '../../../../api/tickets';
 
 const TicketCard = ({ navigation, route }) => {
   const { ticket } = route.params;
@@ -27,15 +29,9 @@ const TicketCard = ({ navigation, route }) => {
 
   const current_ticket = useSelector((state) => state.tickets.current_ticket);
   const token = useSelector((state) => state.user.token);
-  const statuses = [
-    { text: 'Новая', name: 'pending', color: '#a8a8a8' },
-    { text: 'В работе', name: 'processing', color: '#ef820d' },
-    { text: 'Выполнен', name: 'finished', color: '#05b41c' },
-    { text: 'Отменён', name: 'canceled', color: '#ec4034' },
-    { text: 'Закрыть' },
-  ];
   const dispatch = useDispatch();
-  const [status, setStatus] = useState(statuses[0]);
+  const [statuses, setStatuses] = useState([]);
+  const [status, setStatus] = useState(current_ticket.status.name);
   const addFile = (file) => {
     if (cameraOpen) {
       setCameraOpen(false);
@@ -64,6 +60,29 @@ const TicketCard = ({ navigation, route }) => {
       }
     });
   }, [current_ticket]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const statusesData = await getStatuses({ token, ticketId: current_ticket.id });
+        setStatuses(statusesData?.data?.data);
+      } catch (e) {
+        Toast.show({ text: 'Что-то пошло не так', type: 'danger' });
+      }
+    })();
+  }, []);
+  const changeTicketStatus = async (index) => {
+    try {
+      const newStatus = await changeStatus({
+        token,
+        ticketId: current_ticket.id,
+        status: statuses[index],
+      });
+      console.log(newStatus);
+      setStatus(statuses[index].name);
+    } catch (e) {
+      Toast.show({ text: e.message, type: 'danger',position:"top" });
+    }
+  };
 
   const createComment = () => {
     const clearComment = comment.trim();
@@ -100,16 +119,28 @@ const TicketCard = ({ navigation, route }) => {
           </Text>
           <TouchableOpacity
             activeOpacity={0.7}
+            onPress={() => ActionSheet.show(
+              {
+                options: statuses.map((item) => item.name),
+                cancelButtonIndex: 4,
+                destructiveButtonIndex: 3,
+              },
+              (buttonIndex) => {
+                if (buttonIndex !== 4) {
+                  changeTicketStatus(buttonIndex);
+                }
+              },
+            )}
           >
             <Text style={{
               paddingVertical: 8,
               paddingHorizontal: 12,
-              backgroundColor: status.color,
+              backgroundColor: 'grey',
               color: '#fff',
               borderRadius: 5,
             }}
             >
-              {ticket?.status?.name}
+              {status}
             </Text>
 
           </TouchableOpacity>
@@ -142,7 +173,7 @@ const TicketCard = ({ navigation, route }) => {
               Наблюдатель:
               {' '}
               {' '}
-              {current_ticket?.assignees?.map((item, index, array) => (
+              {getAssigneeObject('supervisor',current_ticket?.assignees).map((item, index, array) => (
                 <Text key={item.id}>
                   {item?.user?.name || item?.member?.name || '-'}
                   {index !== array.length - 1 ? ', ' : ''}

@@ -27,7 +27,7 @@ const Task = ({ navigation, taskInfo }) => {
             <Radio />
           </View>
           <View>
-            <Text style={TaskStyles.cardText}>
+            <Text style={{ ...TaskStyles.cardText, maxWidth: '95%' }}>
               {taskInfo?.subject}
             </Text>
             <Text style={TaskStyles.deadline}>
