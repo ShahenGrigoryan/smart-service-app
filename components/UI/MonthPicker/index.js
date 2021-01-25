@@ -55,7 +55,7 @@ const MonthPicker = ({ onDateChange }) => {
             </TouchableOpacity>
           </View>
           <View style={MonthPickerStyles.main}>
-            {months.map((item, index) => (
+            {months?.map((item, index) => (
               <View style={{ width: '33%' }} key={`month__${index}`}>
                 <TouchableOpacity
                   activeOpacity={0.5}

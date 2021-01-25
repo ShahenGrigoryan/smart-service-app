@@ -7,6 +7,7 @@ import { TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import * as DocumentPicker from 'expo-document-picker';
+import NetInfo from '@react-native-community/netinfo';
 import AppCardStyles from '../../Applications/Card/styles';
 import CameraWrapper from '../../../../components/Containers/CameraWrapper';
 import CardStyles from '../../../../globalStyles/card';
@@ -19,6 +20,8 @@ import {
 } from '../../../../redux/tasks/tasks.actions';
 import Comment from '../../../../components/UI/Comment/Comment';
 import PageWrapper from '../../../../components/Containers/PageWrapper';
+import { addCheckFileStart } from '../../../../redux/checks/checks.actions';
+import { addFileToQue, uploadFilesInQue } from '../../../../redux/files_que/files_que.reducer';
 
 const TaskCard = ({ navigation, route }) => {
   const { task } = route.params;
@@ -36,11 +39,24 @@ const TaskCard = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const [status, setStatus] = useState(statuses[0]);
   const [cameraOpen, setCameraOpen] = useState(false);
+
+  const placeFileInQue = (file) => {
+    dispatch(addFileToQue({ section_name: 'tasks', file, id: current_task?.id }));
+    Toast.show({
+      text: 'Нет интернета. Файл добавлен в очередь', type: 'warning', position: 'top', textStyle: { textAlign: 'center' },
+    });
+  };
   const addFile = (file) => {
     if (cameraOpen) {
       setCameraOpen(false);
     }
-    dispatch(addTaskFileStart({ file, taskId: current_task?.id, token }));
+    NetInfo.fetch().then((state) => {
+      if (state.isConnected) {
+        dispatch(addTaskFileStart({ file, taskId: current_task?.id, token }));
+      } else {
+        placeFileInQue(file);
+      }
+    });
   };
   const pickFile = async () => {
     try {
@@ -94,6 +110,13 @@ const TaskCard = ({ navigation, route }) => {
     };
     dispatch(updateTaskStart({ token, body, id: task.id }));
   };
+  const files_in_que = useSelector((state) => state.files_in_que);
+  useEffect(() => {
+    if (files_in_que?.tasks?.length
+        || files_in_que?.entity_tasks?.length || files_in_que?.tickets?.length) {
+      dispatch(uploadFilesInQue({ files_in_que, token }));
+    }
+  }, []);
 
   return (
     <CameraWrapper onAdd={addFile} open={cameraOpen}>
@@ -178,23 +201,23 @@ const TaskCard = ({ navigation, route }) => {
             <Text>
               Наблюдатель:
               {' '}
-              {getAssigneeObject('supervisor', current_task?.asignees)?.map((item, index, array) => (
-                <Text key={`supervisor_${index}__`}>
-                  {item}
+              {getAssigneeObject('supervisor', current_task?.assignees)?.map((item, index, array) => (
+                <React.Fragment key={item.id}>
+                  {item?.user?.name || item?.member?.name || '-'}
                   {index !== array.length - 1 ? ', ' : ''}
                   {' '}
-                </Text>
+                </React.Fragment>
               ))}
             </Text>
             <Text style={{ color: 'red' }}>
               Ответственные:
               {' '}
-              {task?.assignees?.map((item, index, array) => (
-                <Text key={item.id} style={{ color: 'red' }}>
-                  {item.user.name}
+              {getAssigneeObject('organisation', current_task?.assignees)?.map((item, index, array) => (
+                <React.Fragment key={item.id}>
+                  {item?.user?.name || item?.member?.name || '-'}
                   {index !== array.length - 1 ? ', ' : ''}
                   {' '}
-                </Text>
+                </React.Fragment>
               ))}
             </Text>
           </Card>

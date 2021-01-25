@@ -21,7 +21,6 @@ const CameraWrapper = ({ open, children, onAdd = () => null }) => {
   const takePic = async () => {
     if (camera) {
       const pic = await camera.takePictureAsync();
-      console.log('picture', pic);
       pic.name = `${Date.now()}${pic?.uri?.slice(pic.uri.lastIndexOf('.'))}`;
       onAdd(pic);
     }

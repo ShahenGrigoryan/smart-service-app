@@ -6,6 +6,7 @@ import { TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useDispatch, useSelector } from 'react-redux';
+import NetInfo from '@react-native-community/netinfo';
 import SideMenuStyles from '../../globalStyles/sideMenu';
 import HeaderStyles from './styles';
 import ComponentsBackground from '../Containers/ComponentsBackground';
@@ -13,8 +14,10 @@ import FilterStyles from '../../globalStyles/desktopFilter';
 import FilterButton from '../UI/FilterButton';
 import { getDate } from '../../utils';
 import { getDesktopItemsStart } from '../../redux/desktop/desktop.actions';
-import { getTasksStart } from '../../redux/tasks/tasks.actions';
+import { addTaskFileStart, getTasksStart } from '../../redux/tasks/tasks.actions';
 import SearchBar from '../SearchBar';
+import { addTicketFileStart } from '../../redux/tickets/tickets.actions';
+import { addCheckFileStart } from '../../redux/checks/checks.actions';
 
 const desktopFilters = [
   { name: 'Все', id: 'all', params: null },
@@ -22,16 +25,16 @@ const desktopFilters = [
     name: 'Сегодня',
     id: 'today',
     params: {
-      startDate: getDate(Date.now()),
-      endDate: getDate(Date.now()),
+      startDate: new Date(new Date(Date.now()).setHours(0, 0, 0, 0)).toISOString(),
+      endDate: new Date(new Date(Date.now()).setHours(23, 59, 0, 0)).toISOString(),
     },
   },
   {
     name: 'Alarm',
     id: 'alarm',
     params: {
-      startFinishDate: getDate(Date.now()),
-      endFinishDate: getDate(Date.now()),
+      startFinishDate: new Date(new Date(Date.now()).setHours(0, 0, 0, 0)).toISOString(),
+      endFinishDate: new Date(new Date(Date.now()).setHours(23, 59, 0, 0)).toISOString(),
     },
   },
 ];
@@ -50,12 +53,16 @@ const AppHeader = ({ menuOpen }) => {
   useEffect(() => {
     setDesktopFilter(storeDesktopFilter ?? desktopFilters[0]);
   }, [storeDesktopFilter]);
-  console.log('token', token);
   const tasksFilters = [
+    {
+      name: 'Все',
+      id: 'all',
+      params: '',
+    },
     {
       name: 'Мои',
       id: 'my',
-      params: `?users[]=${id}&status[]=pending&status[]=processing`,
+      params: `?users[]=${id}&status[]=pending&status[]=processing&status[]=finished`,
     },
     {
       name: 'Поручил',

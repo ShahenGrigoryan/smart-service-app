@@ -10,6 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
+import NetInfo from '@react-native-community/netinfo';
 import AppCardStyles from './styles';
 import CameraWrapper from '../../../../components/Containers/CameraWrapper';
 import { getAssigneeObject } from '../../../../utils';
@@ -21,6 +22,8 @@ import {
 import PageWrapper from '../../../../components/Containers/PageWrapper';
 import Comment from '../../../../components/UI/Comment/Comment';
 import { changeStatus, getStatuses } from '../../../../api/tickets';
+import { addFileToQue } from '../../../../redux/files_que/files_que.reducer';
+import { addTaskFileStart } from '../../../../redux/tasks/tasks.actions';
 
 const TicketCard = ({ navigation, route }) => {
   const { ticket } = route.params;
@@ -31,12 +34,25 @@ const TicketCard = ({ navigation, route }) => {
   const token = useSelector((state) => state.user.token);
   const dispatch = useDispatch();
   const [statuses, setStatuses] = useState([]);
-  const [status, setStatus] = useState(current_ticket.status.name);
+  const [status, setStatus] = useState(current_ticket?.status?.name);
+  const placeFileInQue = (file) => {
+    dispatch(addFileToQue({ section_name: 'tickets', file, id: current_ticket?.id }));
+    Toast.show({
+      text: 'Нет интернета. Файл добавлен в очередь', type: 'warning', position: 'top', textStyle: { textAlign: 'center' },
+    });
+  };
+
   const addFile = (file) => {
     if (cameraOpen) {
       setCameraOpen(false);
     }
-    dispatch(addTicketFileStart({ file, ticketId: current_ticket?.id, token }));
+    NetInfo.fetch().then((state) => {
+      if (state.isConnected) {
+        dispatch(addTicketFileStart({ file, ticketId: current_ticket?.id, token }));
+      } else {
+        placeFileInQue(file);
+      }
+    });
   };
   const pickFile = async () => {
     try {
@@ -47,7 +63,6 @@ const TicketCard = ({ navigation, route }) => {
         addFile(file);
       }
     } catch (e) {
-      console.log('error==', e);
     }
   };
   useEffect(() => {
@@ -72,15 +87,14 @@ const TicketCard = ({ navigation, route }) => {
   }, []);
   const changeTicketStatus = async (index) => {
     try {
-      const newStatus = await changeStatus({
+      await changeStatus({
         token,
         ticketId: current_ticket.id,
         status: statuses[index],
       });
-      console.log(newStatus);
       setStatus(statuses[index].name);
     } catch (e) {
-      Toast.show({ text: e.message, type: 'danger',position:"top" });
+      Toast.show({ text: e.message, type: 'danger', position: 'top' });
     }
   };
 
@@ -121,7 +135,7 @@ const TicketCard = ({ navigation, route }) => {
             activeOpacity={0.7}
             onPress={() => ActionSheet.show(
               {
-                options: statuses.map((item) => item.name),
+                options: statuses?.map((item) => item.name),
                 cancelButtonIndex: 4,
                 destructiveButtonIndex: 3,
               },
@@ -173,7 +187,7 @@ const TicketCard = ({ navigation, route }) => {
               Наблюдатель:
               {' '}
               {' '}
-              {getAssigneeObject('supervisor',current_ticket?.assignees).map((item, index, array) => (
+              {getAssigneeObject('supervisor', current_ticket?.assignees)?.map((item, index, array) => (
                 <Text key={item.id}>
                   {item?.user?.name || item?.member?.name || '-'}
                   {index !== array.length - 1 ? ', ' : ''}
@@ -184,7 +198,7 @@ const TicketCard = ({ navigation, route }) => {
             <Text>
               Исполнитель:
               {' '}
-              {current_ticket?.assignees?.map((item, index, array) => (
+              {getAssigneeObject('organisation', current_ticket?.assignees)?.map((item, index, array) => (
                 <Text key={item.id}>
                   {item?.user?.name || item?.member?.name || '-'}
                   {index !== array.length - 1 ? ', ' : ''}
@@ -195,7 +209,7 @@ const TicketCard = ({ navigation, route }) => {
             <Text>
               От заказчика:
               {' '}
-              {current_ticket?.assignees?.map((item, index, array) => (
+              {getAssigneeObject('customer', current_ticket?.assignees)?.map((item, index, array) => (
                 <Text key={item.id}>
                   {item?.user?.name || item?.member?.name || '-'}
                   {index !== array.length - 1 ? ', ' : ''}

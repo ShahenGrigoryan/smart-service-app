@@ -81,7 +81,6 @@ export const removeFile = ({ token, checkId, fileId }) => {
   });
 };
 export const changeCheckStatus = ({ token, checkId, status }) => {
-  console.log(checkId)
   const url = `${baseUrl}/entity_tasks/${checkId}/status`;
   return axios.put(url, JSON.stringify(status), {
     headers: {

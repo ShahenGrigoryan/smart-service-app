@@ -18,6 +18,7 @@ const Tasks = ({ navigation }) => {
   const token = useSelector((state) => state.user.token);
   const tasks = useSelector((state) => state.tasks.items);
   const isLoading = useSelector((state) => state.pages.loading);
+  const filter = useSelector((state) => state.tasks.filter);
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       dispatch(PageActions.changeRoute('Tasks'));
@@ -30,7 +31,7 @@ const Tasks = ({ navigation }) => {
 
   return (
 
-    <PageWrapper onRefresh={() => dispatch(getTasksStart(token))}>
+    <PageWrapper onRefresh={() => dispatch(getTasksStart(token,filter))}>
       <View style={ContainerStyles.root}>
         {tasks?.length
           ? tasks?.map((item) => <Task navigation={navigation} taskInfo={item} key={item.id} />)

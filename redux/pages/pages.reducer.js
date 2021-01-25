@@ -13,7 +13,7 @@ const pagesReducer = (state = initialState, action) => {
     }
     case Actions.PAGE_FAILURE: {
       Toast.show({
-        text: `${action.error} page error`, type: 'danger', position: 'top', textStyle: { textAlign: 'center' },
+        text: action.error, type: 'danger', position: 'top', textStyle: { textAlign: 'center' },
       });
       return state;
     }

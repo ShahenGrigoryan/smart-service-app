@@ -6,6 +6,7 @@ import { TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import * as DocumentPicker from 'expo-document-picker';
+import NetInfo from '@react-native-community/netinfo';
 import AppCardStyles from '../../Applications/Card/styles';
 import CardStyles from '../../../../globalStyles/card';
 import CameraWrapper from '../../../../components/Containers/CameraWrapper';
@@ -14,11 +15,12 @@ import {
   createCheckCommentStart,
   getCurrentCheckStart,
 } from '../../../../redux/checks/checks.actions';
-import { getDate, getTime } from '../../../../utils';
+import { getAssigneeObject, getDate, getTime } from '../../../../utils';
 import Comment from '../../../../components/UI/Comment/Comment';
 import PageWrapper from '../../../../components/Containers/PageWrapper';
 import { changeCheckStatus } from '../../../../api/checks';
 import CheckStatusButton from '../../../../components/UI/CheckStatusButton';
+import { addFileToQue, uploadFilesInQue } from '../../../../redux/files_que/files_que.reducer';
 
 const CheckCard = ({ navigation, route }) => {
   const { check } = route.params;
@@ -29,11 +31,24 @@ const CheckCard = ({ navigation, route }) => {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [comment, setComment] = useState('');
 
+  const placeFileInQue = (file) => {
+    dispatch(addFileToQue({ section_name: 'entity_tasks', file, id: current_check?.id }));
+    Toast.show({
+      text: 'Нет интернета. Файл добавлен в очередь', type: 'warning', position: 'top', textStyle: { textAlign: 'center' },
+    });
+  };
+
   const addFile = (file) => {
     if (cameraOpen) {
       setCameraOpen(false);
     }
-    dispatch(addCheckFileStart({ file, checkId: current_check?.id, token }));
+    NetInfo.fetch().then((state) => {
+      if (state.isConnected) {
+        dispatch(addCheckFileStart({ file, checkId: current_check?.id, token }));
+      } else {
+        placeFileInQue(file);
+      }
+    });
   };
   const pickFile = async () => {
     try {
@@ -85,7 +100,13 @@ const CheckCard = ({ navigation, route }) => {
       Toast.show({ text: e.message, type: 'danger', position: 'top' });
     }
   };
-
+  const files_in_que = useSelector((state) => state.files_in_que);
+  useEffect(() => {
+    if (files_in_que?.tasks?.length
+        || files_in_que?.entity_tasks?.length || files_in_que?.tickets?.length) {
+      dispatch(uploadFilesInQue({ files_in_que, token }));
+    }
+  }, []);
   return (
     <CameraWrapper onAdd={addFile} open={cameraOpen}>
       <PageWrapper
@@ -122,32 +143,25 @@ const CheckCard = ({ navigation, route }) => {
             </Text>
 
             <Text style={{ color: '#31afe6', fontWeight: 'bold', fontSize: 18 }}>
-              Инициатор:
-              {' '}
-              {current_check?.user?.name || current_check?.member?.name || '-'}
-            </Text>
-            <Text style={{ color: '#31afe6', fontWeight: 'bold', fontSize: 18 }}>
               Ответственные:
               {' '}
-              {current_check?.assignees?.map((item, index, array) => (
+              {getAssigneeObject('organisation', current_check?.assignees)?.map((item, index, array) => (
                 <React.Fragment key={item.id}>
                   {item?.user?.name || item?.member?.name || '-'}
                   {index !== array.length - 1 ? ', ' : ''}
                   {' '}
                 </React.Fragment>
-
               ))}
             </Text>
             <Text style={{ color: '#31afe6', fontWeight: 'bold', fontSize: 18 }}>
               От заказчика:
               {' '}
-              {current_check?.assignees?.map((item, index, array) => (
+              {getAssigneeObject('customer', current_check?.assignees)?.map((item, index, array) => (
                 <React.Fragment key={item.id}>
                   {item?.user?.name || item?.member?.name || '-'}
                   {index !== array.length - 1 ? ', ' : ''}
                   {' '}
                 </React.Fragment>
-
               ))}
             </Text>
             <View style={{

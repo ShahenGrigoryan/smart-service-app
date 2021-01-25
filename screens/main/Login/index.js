@@ -9,13 +9,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import LogoGreen from '../../../assets/images/LogoGreen.png';
 import * as UserActions from '../../../redux/user/user.actions';
 import Loader from '../../../components/UI/Loader';
+import PageWrapper from '../../../components/Containers/PageWrapper';
 
 const Login = ({ navigation }) => {
-  const [userInfo, setUserInfo] = useState({ email: 'bukov_ing@terra-security.ru', password: '123abc' });
+  const [userInfo, setUserInfo] = useState({ email: '', password: '' });
+  // const [userInfo, setUserInfo] = useState({ email: 'bukov_ing@terra-security.ru', password: '123abc' });
   const dispatch = useDispatch();
   const userStore = useSelector((state) => state.user);
   const { isLoggedIn } = userStore;
-  const isLoading = userStore.loading;
+  const isLoading = useSelector((state) => state.pages.loading);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -28,55 +30,53 @@ const Login = ({ navigation }) => {
   };
 
   return (
-    <Container>
-      <KeyboardAwareScrollView>
-        <View>
-          {isLoading && <Loader />}
-          <LoginView style={{ height: Dimensions.get('window').height }}>
-            <LogoTextView>
-              <GreenLogoImage source={LogoGreen} />
-              <GreenMainText>
-                SMART SERVICE
-              </GreenMainText>
-              <GreenSecText>
-                Будь эффективнее
-              </GreenSecText>
-            </LogoTextView>
 
-            <LoginFormView>
-              <Item style={{ marginBottom: 20 }} floatingLabel>
-                <Label>Логин</Label>
-                <Input
-                  value={userInfo.email}
-                  onChangeText={(text) => setUserInfo({ ...userInfo, email: text })}
-                />
-              </Item>
-              <Item style={{ marginBottom: 30 }} floatingLabel>
-                <Label>Пароль</Label>
-                <Input
-                  value={userInfo.password}
-                  onChangeText={(text) => setUserInfo({ ...userInfo, password: text })}
-                  secureTextEntry
-                />
-              </Item>
-              <View style={{ alignItems: 'center' }}>
-                <Button
-                  onPress={() => login()}
-                  style={{
-                    padding: 0, height: 30, zIndex: -155, backgroundColor: '#438763',
-                  }}
-                >
-                  <Text>
-                    Войти
-                  </Text>
-                </Button>
-              </View>
-            </LoginFormView>
-          </LoginView>
-        </View>
-      </KeyboardAwareScrollView>
-    </Container>
+    <KeyboardAwareScrollView>
+      {isLoading && <Loader />}
+      <View>
+        <LoginView style={{ height: Dimensions.get('window').height }}>
+          <LogoTextView>
+            <GreenLogoImage source={LogoGreen} />
+            <GreenMainText>
+              SMART SERVICE
+            </GreenMainText>
+            <GreenSecText>
+              Будь эффективнее
+            </GreenSecText>
+          </LogoTextView>
 
+          <LoginFormView>
+            <Item style={{ marginBottom: 20 }} floatingLabel>
+              <Label>Логин</Label>
+              <Input
+                value={userInfo.email}
+                onChangeText={(text) => setUserInfo({ ...userInfo, email: text })}
+              />
+            </Item>
+            <Item style={{ marginBottom: 30 }} floatingLabel>
+              <Label>Пароль</Label>
+              <Input
+                value={userInfo.password}
+                onChangeText={(text) => setUserInfo({ ...userInfo, password: text })}
+                secureTextEntry
+              />
+            </Item>
+            <View style={{ alignItems: 'center' }}>
+              <Button
+                onPress={() => login()}
+                style={{
+                  padding: 0, height: 30, zIndex: -155, backgroundColor: '#438763',
+                }}
+              >
+                <Text>
+                  Войти
+                </Text>
+              </Button>
+            </View>
+          </LoginFormView>
+        </LoginView>
+      </View>
+    </KeyboardAwareScrollView>
   );
 };
 

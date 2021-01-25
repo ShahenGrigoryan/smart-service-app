@@ -1,5 +1,5 @@
 import {
-  put, takeLatest, all, call,
+  put, takeLatest, all, call, takeEvery,
 } from 'redux-saga/effects';
 import * as FileSystem from 'expo-file-system';
 import { Toast } from 'native-base';
@@ -13,6 +13,7 @@ import {
   updateTaskCheckListItemSuccess,
   updateTaskSuccess,
 } from './tasks.actions';
+import { addFileToQue, removeFileFromQue } from '../files_que/files_que.reducer';
 
 function* getTasks({ token, filter }) {
   yield put(PageActions.startLoading());
@@ -25,7 +26,7 @@ function* getTasks({ token, filter }) {
     if (e?.response?.status === 401) {
       yield put(UserActions.loginFailure(e.message));
     } else {
-      yield put(PageActions.pageFailure(`${e.message} getTasks`));
+      yield put(PageActions.pageFailure(`${e.message} getTasks__,${filter}`));
     }
   }
 }
@@ -115,23 +116,25 @@ function* updateTask({ token, body, id }) {
 function* addTaskFile({ token, taskId, file }) {
   try {
     yield put(PageActions.startLoading());
-    const base64 = yield FileSystem.readAsStringAsync(file?.uri, { encoding: FileSystem.EncodingType.Base64 });
+    const base64 = yield FileSystem
+      .readAsStringAsync(file?.uri, { encoding: FileSystem.EncodingType.Base64 });
     const ext = file?.name.slice(file.name.indexOf('.') + 1);
-    console.log('ext', ext);
     const data = JSON.stringify({
       name: file.name,
       content_type: `application/${ext}`,
       attachment: `data:application/${ext};base64,${base64}`,
     });
-    console.log('data', data);
     const newFile = yield Api.addFile({ token, taskId, data });
-    console.log('newFile',newFile.data.data)
-    yield put(addTaskFileSuccess(newFile?.data?.data? newFile.data.data:newFile));
+    yield put(addTaskFileSuccess(newFile?.data?.data ? newFile.data.data : newFile));
     yield put(PageActions.endLoading());
+    yield put(removeFileFromQue({ section_name: 'tasks', file }));
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
       yield put(UserActions.loginFailure(e.message));
+    } else if (e?.response?.status === 503) {
+      yield put(addFileToQue({ section_name: 'tasks', file, id: taskId }));
+      yield put(PageActions.pageFailure('Файл добавлен в очередь'));
     } else {
       yield put(PageActions.pageFailure(`${e.message}`));
     }
@@ -173,7 +176,7 @@ function* getFilesStart() {
   yield takeLatest(TasksActions.GET_TASK_FILES_START, getTaskFiles);
 }
 function* addTaskFileStart() {
-  yield takeLatest(TasksActions.ADD_TASK_FILE_START, addTaskFile);
+  yield takeEvery(TasksActions.ADD_TASK_FILE_START, addTaskFile);
 }
 function* removeTaskFileStart() {
   yield takeLatest(TasksActions.REMOVE_TASK_FILE_START, removeTaskFile);

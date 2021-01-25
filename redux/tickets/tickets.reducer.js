@@ -42,7 +42,7 @@ const ticketsReducer = (state = initialState, action) => {
     }
     case UPDATE_TICKET_CHECKLIST_ITEM_SUCCESS: {
       const { newCheckListItem, ticketTodoId, todoItemId } = action.checkListItem;
-      const newTodos = state.current_ticket.ticket_todos.map((item) => item);
+      const newTodos = state.current_ticket?.ticket_todos?.map((item) => item);
       for (let i = 0; i < newTodos.length; i++) {
         if (newTodos[i].id === ticketTodoId) {
           for (let j = 0; j < newTodos[i]?.ticket_todo_items?.length; j++) {
@@ -87,7 +87,6 @@ const ticketsReducer = (state = initialState, action) => {
       return { ...state, current_ticket: { ...state.current_ticket, files: newFiles } };
     }
     case GET_TICKET_FILES_SUCCESS: {
-      console.log('files', action.files);
       return {
         ...state, current_ticket: { ...state.current_ticket, files: action.files },
       };

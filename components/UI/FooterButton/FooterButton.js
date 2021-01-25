@@ -24,7 +24,7 @@ const FooterButton = ({
     <Button onPress={onPress} style={FooterStyles.button}>
       <Image source={active ? activeIcon : passiveIcon} style={{ width: 20, height: 20 }} />
       {newsCount && (
-        <NewsBadge count={5} />
+        <NewsBadge count={newsCount} />
       )}
 
       <Text style={active ? FooterStyles.buttonTextActive : FooterStyles.buttonText}>

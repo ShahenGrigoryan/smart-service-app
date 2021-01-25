@@ -1,5 +1,5 @@
 import {
-  put, takeLatest, all, call,
+  put, takeLatest, all, call,takeEvery
 } from 'redux-saga/effects';
 import * as FileSystem from 'expo-file-system';
 import * as Api from '../../api/checks';
@@ -12,10 +12,7 @@ import {
   updateCheckCheckListItemSuccess,
   updateCheckSuccess,
 } from './checks.actions';
-import * as TicketsActions from '../tickets/tickets.actions';
-import { addTicketFileSuccess, removeTicketFileSuccess } from '../tickets/tickets.actions';
-import * as TasksActions from '../tasks/tasks.actions';
-import { updateTaskCheckListItemSuccess } from '../tasks/tasks.actions';
+import { addFileToQue } from '../files_que/files_que.reducer';
 
 function* getChecks({ token, filter }) {
   yield put(PageActions.startLoading());
@@ -111,6 +108,9 @@ function* addCheckFile({ token, checkId, file }) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
       yield put(UserActions.loginFailure(e.message));
+    } else if (e?.response?.status === 503) {
+      yield put(addFileToQue({ section_name: 'entity_tasks', file, id: checkId }));
+      yield put(PageActions.pageFailure('Файл добавлен в очередь'));
     } else {
       yield put(PageActions.pageFailure(`${e.message}`));
     }
@@ -171,7 +171,7 @@ function* getFilesStart() {
   yield takeLatest(ChecksActions.GET_CHECK_FILES_START, getChecksFiles);
 }
 function* addCheckFileStart() {
-  yield takeLatest(ChecksActions.ADD_CHECK_FILE_START, addCheckFile);
+  yield takeEvery(ChecksActions.ADD_CHECK_FILE_START, addCheckFile);
 }
 function* removeCheckFileStart() {
   yield takeLatest(ChecksActions.REMOVE_CHECK_FILE_START, removeCheckFile);

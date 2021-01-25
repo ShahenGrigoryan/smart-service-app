@@ -1,19 +1,12 @@
 import React, { useEffect } from 'react';
-import { Content } from 'native-base';
 import { useDispatch, useSelector } from 'react-redux';
-
-import { RefreshControl, Dimensions, View } from 'react-native';
-
 import ItemPreview from '../../../components/ItemPreview';
-
 import * as PageActions from '../../../redux/pages/pages.actions';
-
-import PagesBackground from '../../../components/Containers/PagesBackground';
 import { getDesktopItemsStart } from '../../../redux/desktop/desktop.actions';
 import NotFound from '../../../components/NotFound';
-import ItemsWrapper from '../../../components/Containers/ItemsWrapper';
 import PageWrapper from '../../../components/Containers/PageWrapper';
 import { getUserStart } from '../../../redux/user/user.actions';
+import { uploadFilesInQue } from '../../../redux/files_que/files_que.reducer';
 
 const Desktop = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -27,6 +20,13 @@ const Desktop = ({ navigation }) => {
     });
     return unsubscribe;
   }, [navigation]);
+  const files_in_que = useSelector((state) => state.files_in_que);
+  useEffect(() => {
+    if (files_in_que?.tasks?.length
+        || files_in_que?.entity_tasks?.length || files_in_que?.tickets?.length) {
+      dispatch(uploadFilesInQue({ files_in_que, token }));
+    }
+  }, []);
   useEffect(() => {
     dispatch(getDesktopItemsStart(token, filter));
   }, []);
@@ -38,7 +38,7 @@ const Desktop = ({ navigation }) => {
     <PageWrapper
       onRefresh={() => dispatch(getDesktopItemsStart(token, filter))}
     >
-      {desktopItems?.length ? desktopItems.map((item) => (
+      {desktopItems?.length ? desktopItems?.map((item) => (
         <ItemPreview
           key={item.id}
           navigation={navigation}

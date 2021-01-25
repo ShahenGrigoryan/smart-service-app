@@ -39,7 +39,6 @@ const tasksReducer = (state = initialState, action) => {
       };
     }
     case GET_TASK_FILES_SUCCESS: {
-      console.log('files', action.files);
       return {
         ...state, current_task: { ...state.current_task, files: action.files },
       };
@@ -47,14 +46,9 @@ const tasksReducer = (state = initialState, action) => {
     case GET_TASKS_START: {
       return { ...state, filter: action.filter };
     }
-    case ADD_TASK_FILE_START: {
-      const files_in_que = state.files_in_que.length
-        ? [...state.files_in_que, action.file] : [action.file];
-      return { ...state, files_in_que };
-    }
     case UPDATE_TASK_CHECKLIST_ITEM_SUCCESS: {
       const { newCheckListItem, taskTodoId, todoItemId } = action.checkListItem;
-      const newTodos = state.current_task.task_todos.map((item) => item);
+      const newTodos = state.current_task?.task_todos?.map((item) => item);
       for (let i = 0; i < newTodos.length; i++) {
         if (newTodos[i].id === taskTodoId) {
           for (let j = 0; j < newTodos[i]?.task_todo_items?.length; j++) {
@@ -92,8 +86,7 @@ const tasksReducer = (state = initialState, action) => {
       Toast.show({
         text: 'Файл успешно добавлен!', type: 'success', position: 'top', style: { top: 30 }, textStyle: { textAlign: 'center' },
       });
-      const newQueFiles = state.files_in_que?.filter((item) => item?.name !== action?.file?.name);
-      return { ...state, files_in_que: newQueFiles };
+      return { ...state };
     }
     case REMOVE_TASK_FILE_SUCCESS: {
       Toast.show({
@@ -101,6 +94,9 @@ const tasksReducer = (state = initialState, action) => {
       });
       const newFiles = state.current_task?.files?.filter((item) => item.id !== action.fileId);
       return { ...state, current_task: { ...state.current_task, files: newFiles } };
+    }
+    case ADD_TASK_FILE_START: {
+      return state;
     }
     default: return state;
   }

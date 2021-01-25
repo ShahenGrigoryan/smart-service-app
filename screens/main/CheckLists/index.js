@@ -14,11 +14,9 @@ import PageWrapper from '../../../components/Containers/PageWrapper';
 const CheckLists = ({ navigation, route }) => {
   const { data, type } = route?.params;
 
-  console.log('type', type);
   const checkList = type === 'task' ? useSelector((state) => state.tasks?.current_task?.task_todos)
     : useSelector((state) => state.checks?.current_check?.entity_task_todos);
-  console.log(checkList);
-    console.log(checkList)
+
   return (
 
     <PageWrapper>

@@ -10,6 +10,7 @@ import rootSaga from './root.saga';
 import ticketsReducer from './tickets/tickets.reducer';
 import checksReducer from './checks/checks.reducer';
 import desktopReducer from './desktop/desktop.reducer';
+import filesQueReducer from './files_que/files_que.reducer';
 
 const reducers = combineReducers({
   user: userReducer,
@@ -19,6 +20,7 @@ const reducers = combineReducers({
   tasks: tasksReducer,
   tickets: ticketsReducer,
   checks: checksReducer,
+  files_in_que: filesQueReducer,
 });
 const persistConfig = {
   key: 'state',

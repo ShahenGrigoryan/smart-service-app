@@ -9,6 +9,7 @@ import * as UserActions from '../user/user.actions';
 import { addTicketFileSuccess, removeTicketFileSuccess, updateTicketSuccess } from './tickets.actions';
 import * as TasksActions from '../tasks/tasks.actions';
 import { addTaskFileSuccess, removeTaskFileSuccess } from '../tasks/tasks.actions';
+import { addFileToQue } from '../files_que/files_que.reducer';
 
 function* getTickets({ token, filter }) {
   yield put(PageActions.startLoading());
@@ -104,9 +105,13 @@ function* addTicketFile({ token, ticketId, file }) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
       yield put(UserActions.loginFailure(e.message));
+    } else if (e?.response?.status === 503) {
+      yield put(addFileToQue({ section_name: 'tickets', file, id: ticketId }));
+      yield put(PageActions.pageFailure('Файл добавлен в очередь'));
     } else {
-      yield put(PageActions.pageFailure(`${e.message}`));
+      yield put(PageActions.pageFailure('Файл не загружен и добавлен в очередь'));
     }
+
   }
 }
 function* removeTicketFile({ token, ticketId, fileId }) {

@@ -13,7 +13,7 @@ function* getItems({ token, filter }) {
   yield put(PageActions.startLoading());
   try {
     const desktopItems = yield getDesktopItems(token, filter?.params);
-    const data = desktopItems.map((item) => item?.data?.data);
+    const data = desktopItems?.map((item) => item?.data?.data);
     let allItems = [];
     data.forEach((item) => {
       allItems = [...allItems, ...item];

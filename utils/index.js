@@ -24,9 +24,9 @@ export const getDate = (date) => {
 };
 
 export const getAssigneeObject = (type, array) => {
-  if (!array) return { name: '-' };
+  if (!array) return [{ name: '-' }];
   const assignees = array.filter((item) => (item.assignee_type === type));
-  if (assignees.length) return assignees || [];
+  if (assignees?.length) return assignees;
   return [{ name: '-' }];
 };
 

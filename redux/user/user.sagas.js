@@ -9,7 +9,7 @@ import { nullify } from '../tasks/tasks.actions';
 import * as PageActions from '../pages/pages.actions';
 
 function* login(action) {
-  yield put(UserActions.startLoading());
+  yield put(PageActions.startLoading());
   try {
     const userInfo = yield Api.login(action.user);
     yield put(setNotFirst());
@@ -21,6 +21,7 @@ function* login(action) {
     } else {
       yield put(UserActions.loginFailure('Что-то пошло не так'));
     }
+    yield put(PageActions.endLoading());
   }
 }
 
@@ -55,15 +56,18 @@ function* getPayrolls({
 }
 
 function* getUser({ token, user_id }) {
+  yield put(PageActions.startLoading());
   try {
     const user = yield Api.getUser(token, user_id);
     yield put(getUserSuccess(user?.data?.data));
+    yield put(PageActions.endLoading());
   } catch (e) {
     if (e?.response?.status === 401) {
       yield put(UserActions.loginFailure('Время сессии истекло!'));
     } else {
       yield put(PageActions.pageFailure(e.message));
     }
+    yield put(PageActions.endLoading());
   }
 }
 

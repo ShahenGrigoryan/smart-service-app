@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Dimensions } from 'react-native';
+import { Image } from 'react-native';
 import { useSelector } from 'react-redux';
 import PagesBg from '../../assets/images/pagesBg.jpg';
 import Loader from '../UI/Loader';

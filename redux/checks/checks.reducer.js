@@ -115,7 +115,6 @@ const checksReducer = (state = initialState, action) => {
       };
     }
     case GET_CHECK_FILES_SUCCESS: {
-      console.log('files', action.files);
       return {
         ...state, current_check: { ...state.current_check, files: action.files },
       };

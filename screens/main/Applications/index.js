@@ -5,13 +5,19 @@ import * as PageActions from '../../../redux/pages/pages.actions';
 import { getTicketsStart } from '../../../redux/tickets/tickets.actions';
 import NotFound from '../../../components/NotFound';
 import PageWrapper from '../../../components/Containers/PageWrapper';
+import { uploadFilesInQue } from '../../../redux/files_que/files_que.reducer';
 
 const Applications = ({ navigation }) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.token);
   const tickets = useSelector((state) => state.tickets.items);
-
-  const isLoading = useSelector((state) => state.pages.loading);
+  const files_in_que = useSelector((state) => state.files_in_que);
+  useEffect(() => {
+    if (files_in_que?.tasks?.length
+        || files_in_que?.entity_tasks?.length || files_in_que?.tickets?.length) {
+      dispatch(uploadFilesInQue({ files_in_que, token }));
+    }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
