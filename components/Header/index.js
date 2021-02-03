@@ -6,18 +6,14 @@ import { TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useDispatch, useSelector } from 'react-redux';
-import NetInfo from '@react-native-community/netinfo';
 import SideMenuStyles from '../../globalStyles/sideMenu';
 import HeaderStyles from './styles';
 import ComponentsBackground from '../Containers/ComponentsBackground';
 import FilterStyles from '../../globalStyles/desktopFilter';
 import FilterButton from '../UI/FilterButton';
-import { getDate } from '../../utils';
 import { getDesktopItemsStart } from '../../redux/desktop/desktop.actions';
-import { addTaskFileStart, getTasksStart } from '../../redux/tasks/tasks.actions';
+import { getTasksStart } from '../../redux/tasks/tasks.actions';
 import SearchBar from '../SearchBar';
-import { addTicketFileStart } from '../../redux/tickets/tickets.actions';
-import { addCheckFileStart } from '../../redux/checks/checks.actions';
 
 const desktopFilters = [
   { name: 'Все', id: 'all', params: null },
@@ -33,7 +29,7 @@ const desktopFilters = [
     name: 'Alarm',
     id: 'alarm',
     params: {
-      startFinishDate: new Date(new Date(Date.now()).setHours(0, 0, 0, 0)).toISOString(),
+      startDate: 0,
       endFinishDate: new Date(new Date(Date.now()).setHours(23, 59, 0, 0)).toISOString(),
     },
   },
@@ -57,12 +53,12 @@ const AppHeader = ({ menuOpen }) => {
     {
       name: 'Все',
       id: 'all',
-      params: '',
+      params: '?status[]=pending&status[]=processing',
     },
     {
       name: 'Мои',
       id: 'my',
-      params: `?users[]=${id}&status[]=pending&status[]=processing&status[]=finished`,
+      params: `?users[]=${id}&status[]=pending&status[]=processing`,
     },
     {
       name: 'Поручил',

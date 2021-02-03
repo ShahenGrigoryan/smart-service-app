@@ -16,6 +16,8 @@ export const ADD_CHECK_FILE_START = 'ADD_CHECK_FILE_START';
 export const ADD_CHECK_FILE_SUCCESS = 'ADD_CHECK_FILE_SUCCESS';
 export const REMOVE_CHECK_FILE_START = 'REMOVE_CHECK_FILE_START';
 export const REMOVE_CHECK_FILE_SUCCESS = 'REMOVE_CHECK_FILE_SUCCESS';
+export const CHANGE_CHECK_STATUS_START = 'CHANGE_CHECK_STATUS_START';
+export const CHANGE_CHECK_STATUS_SUCCESS = 'CHANGE_CHECK_STATUS_SUCCESS';
 
 export const getChecksSuccess = (checks) => ({
   type: GET_CHECKS_SUCCESS,
@@ -107,4 +109,22 @@ export const getCheckFilesStart = (token, check_id) => ({
 export const getCheckFilesSuccess = (files) => ({
   type: GET_CHECK_FILES_SUCCESS,
   files,
+});
+export const changeCheckStatusStart = ({
+  token,
+  checkId,
+  status,
+}) => ({
+  type: CHANGE_CHECK_STATUS_START,
+  token,
+  checkId,
+  status,
+});
+export const changeCheckStatusSuccess = ({
+  checkId,
+  newStatus,
+}) => ({
+  type: CHANGE_CHECK_STATUS_SUCCESS,
+  checkId,
+  newStatus,
 });

@@ -21,6 +21,13 @@ const pagesReducer = (state = initialState, action) => {
       return { ...state, loading: true };
     }
     case Actions.END_LOADING: {
+      const { message } = action;
+      console.log('message', message);
+      if (message) {
+        Toast.show({
+          text: action.message, type: 'success', position: 'top', style: { marginTop: -25 }, textStyle: { textAlign: 'center' },
+        });
+      }
       return { ...state, loading: false };
     }
     default: {

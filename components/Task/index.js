@@ -34,6 +34,8 @@ const Task = ({ navigation, taskInfo }) => {
               Срок:
               {' '}
               {getDate(taskInfo?.due_by)}
+              {' '}
+              {getTime(taskInfo?.due_by)}
             </Text>
           </View>
         </Card>

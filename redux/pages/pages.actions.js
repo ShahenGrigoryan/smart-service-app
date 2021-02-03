@@ -12,8 +12,9 @@ export const startLoading = () => ({
   type: START_LOADING,
 });
 
-export const endLoading = () => ({
+export const endLoading = (message) => ({
   type: END_LOADING,
+  message,
 });
 
 export const pageFailure = (error) => ({

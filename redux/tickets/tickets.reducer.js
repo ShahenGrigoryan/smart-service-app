@@ -1,6 +1,6 @@
 import { Toast } from 'native-base';
 import {
-  ADD_TICKET_FILE_SUCCESS,
+  ADD_TICKET_FILE_SUCCESS, CHANGE_TICKET_STATUS_SUCCESS,
   CHECKLIST_FAILURE,
   CREATE_TICKET_COMMENT_SUCCESS, GET_CURRENT_TICKET_START,
   GET_CURRENT_TICKET_SUCCESS, GET_TICKET_FILES_SUCCESS,
@@ -8,6 +8,7 @@ import {
   UPDATE_TICKET_CHECKLIST_ITEM_START,
   UPDATE_TICKET_CHECKLIST_ITEM_SUCCESS, UPDATE_TICKET_SUCCESS,
 } from './tickets.actions';
+
 const initialState = {
   items: [],
   current_ticket: {},
@@ -90,6 +91,15 @@ const ticketsReducer = (state = initialState, action) => {
       return {
         ...state, current_ticket: { ...state.current_ticket, files: action.files },
       };
+    }
+    case CHANGE_TICKET_STATUS_SUCCESS: {
+      const { statuses, newStatus, ticketId } = action;
+      console.log('newStatus', newStatus);
+      const newTickets = state?.items
+        ?.map((item) => (item.id !== ticketId ? item : { ...item, status: newStatus, statuses }));
+      const newCurrentTicket = newTickets
+        .filter((item) => item.id === state.current_ticket?.id)?.[0] ?? state.current_ticket;
+      return { ...state, items: newTickets, current_ticket: newCurrentTicket };
     }
 
     case NULLIFY: {

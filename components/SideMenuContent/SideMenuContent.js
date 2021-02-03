@@ -39,7 +39,7 @@ const SideMenuContent = ({ closeDrawer }) => {
             Мой рейтинг
           </Text>
           <Text style={SideMenuStyles.ratingText}>
-            4.7
+            {state?.user?.rate}
           </Text>
         </View>
         <TouchableOpacity activeOpacity={0.5} style={SideMenuStyles.ratingInfoButton}>

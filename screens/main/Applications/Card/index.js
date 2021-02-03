@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, Content, Card, Button, Textarea,
+  View, Text, Card, Button, Textarea,
   Toast, ActionSheet,
 } from 'native-base';
 import {
@@ -9,7 +9,6 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import * as DocumentPicker from 'expo-document-picker';
-import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
 import AppCardStyles from './styles';
 import CameraWrapper from '../../../../components/Containers/CameraWrapper';
@@ -17,13 +16,11 @@ import { getAssigneeObject } from '../../../../utils';
 import {
   getCurrentTicketStart,
   createTicketCommentStart,
-  addTicketFileStart,
+  addTicketFileStart, changeTicketStatusStart,
 } from '../../../../redux/tickets/tickets.actions';
 import PageWrapper from '../../../../components/Containers/PageWrapper';
 import Comment from '../../../../components/UI/Comment/Comment';
-import { changeStatus, getStatuses } from '../../../../api/tickets';
 import { addFileToQue } from '../../../../redux/files_que/files_que.reducer';
-import { addTaskFileStart } from '../../../../redux/tasks/tasks.actions';
 
 const TicketCard = ({ navigation, route }) => {
   const { ticket } = route.params;
@@ -33,8 +30,6 @@ const TicketCard = ({ navigation, route }) => {
   const current_ticket = useSelector((state) => state.tickets.current_ticket);
   const token = useSelector((state) => state.user.token);
   const dispatch = useDispatch();
-  const [statuses, setStatuses] = useState([]);
-  const [status, setStatus] = useState(current_ticket?.status?.name);
   const placeFileInQue = (file) => {
     dispatch(addFileToQue({ section_name: 'tickets', file, id: current_ticket?.id }));
     Toast.show({
@@ -63,39 +58,31 @@ const TicketCard = ({ navigation, route }) => {
         addFile(file);
       }
     } catch (e) {
+      console.log(e);
     }
   };
   useEffect(() => {
+    console.log(current_ticket.statuses);
+  }, []);
+  useEffect(() => {
     dispatch(getCurrentTicketStart(token, ticket.id));
   }, []);
-  useEffect(() => {
-    statuses.forEach((item) => {
-      if (item.name === current_ticket?.status) {
-        setStatus(item);
-      }
-    });
-  }, [current_ticket]);
-  useEffect(() => {
-    (async () => {
-      try {
-        const statusesData = await getStatuses({ token, ticketId: current_ticket.id });
-        setStatuses(statusesData?.data?.data);
-      } catch (e) {
-        Toast.show({ text: 'Что-то пошло не так', type: 'danger' });
-      }
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const statusesData = await getStatuses({ token, ticketId: current_ticket.id });
+  //       setStatuses(statusesData?.data?.data);
+  //     } catch (e) {
+  //       Toast.show({ text: 'Что-то пошло не так', type: 'danger' });
+  //     }
+  //   })();
+  // }, []);
   const changeTicketStatus = async (index) => {
-    try {
-      await changeStatus({
-        token,
-        ticketId: current_ticket.id,
-        status: statuses[index],
-      });
-      setStatus(statuses[index].name);
-    } catch (e) {
-      Toast.show({ text: e.message, type: 'danger', position: 'top' });
-    }
+    dispatch(changeTicketStatusStart({
+      token,
+      ticketId: current_ticket?.id,
+      status: current_ticket?.statuses?.[index],
+    }));
   };
 
   const createComment = () => {
@@ -135,7 +122,7 @@ const TicketCard = ({ navigation, route }) => {
             activeOpacity={0.7}
             onPress={() => ActionSheet.show(
               {
-                options: statuses?.map((item) => item.name),
+                options: (current_ticket?.statuses ?? [])?.map((item) => item.name),
                 cancelButtonIndex: 4,
                 destructiveButtonIndex: 3,
               },
@@ -154,7 +141,7 @@ const TicketCard = ({ navigation, route }) => {
               borderRadius: 5,
             }}
             >
-              {status}
+              {current_ticket?.status?.name}
             </Text>
 
           </TouchableOpacity>

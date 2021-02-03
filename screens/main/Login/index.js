@@ -2,18 +2,16 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Platform, StatusBar, Dimensions } from 'react-native';
 import {
-  Container, Item, Label, Input, Button, Text, View,
+  Item, Label, Input, Button, Text, View,
 } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useDispatch, useSelector } from 'react-redux';
 import LogoGreen from '../../../assets/images/LogoGreen.png';
 import * as UserActions from '../../../redux/user/user.actions';
 import Loader from '../../../components/UI/Loader';
-import PageWrapper from '../../../components/Containers/PageWrapper';
 
 const Login = ({ navigation }) => {
   const [userInfo, setUserInfo] = useState({ email: '', password: '' });
-  // const [userInfo, setUserInfo] = useState({ email: 'bukov_ing@terra-security.ru', password: '123abc' });
   const dispatch = useDispatch();
   const userStore = useSelector((state) => state.user);
   const { isLoggedIn } = userStore;
@@ -22,6 +20,7 @@ const Login = ({ navigation }) => {
   useEffect(() => {
     if (isLoggedIn) {
       navigation.navigate('Desktop');
+      setUserInfo({ email: '', password: '' });
     }
   }, [isLoggedIn]);
 

@@ -1,10 +1,7 @@
 import React, { useEffect } from 'react';
-import { Content } from 'native-base';
 import { useDispatch, useSelector } from 'react-redux';
-import { RefreshControl } from 'react-native';
 import Check from '../../../components/Check/Check';
 import * as PageActions from '../../../redux/pages/pages.actions';
-import PagesBackground from '../../../components/Containers/PagesBackground';
 import { getChecksStart } from '../../../redux/checks/checks.actions';
 import NotFound from '../../../components/NotFound';
 import PageWrapper from '../../../components/Containers/PageWrapper';

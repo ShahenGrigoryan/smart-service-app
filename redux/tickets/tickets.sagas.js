@@ -6,9 +6,12 @@ import * as Api from '../../api/tickets';
 import * as TicketsActions from './tickets.actions';
 import * as PageActions from '../pages/pages.actions';
 import * as UserActions from '../user/user.actions';
-import { addTicketFileSuccess, removeTicketFileSuccess, updateTicketSuccess } from './tickets.actions';
-import * as TasksActions from '../tasks/tasks.actions';
-import { addTaskFileSuccess, removeTaskFileSuccess } from '../tasks/tasks.actions';
+import {
+  addTicketFileSuccess,
+  changeTicketStatusSuccess,
+  removeTicketFileSuccess,
+  updateTicketSuccess,
+} from './tickets.actions';
 import { addFileToQue } from '../files_que/files_que.reducer';
 
 function* getTickets({ token, filter }) {
@@ -31,7 +34,12 @@ function* getCurrentTicket({ token, id, filter }) {
   try {
     yield put(PageActions.startLoading());
     const currentTicket = yield Api.getCurrentTicket(token, id, filter?.params);
-    yield put(TicketsActions.getCurrentTicketSuccess(currentTicket?.data?.data));
+    const statuses = yield Api.getStatuses({ token, ticketId: id });
+    console.log('statuses', statuses);
+    yield put(TicketsActions.getCurrentTicketSuccess({
+      ...currentTicket?.data?.data,
+      statuses: statuses?.data?.data,
+    }));
     yield put(PageActions.endLoading());
   } catch (e) {
     yield put(PageActions.endLoading());
@@ -91,7 +99,8 @@ function* getTicketFiles({ token, ticket_id }) {
 function* addTicketFile({ token, ticketId, file }) {
   try {
     yield put(PageActions.startLoading());
-    const base64 = yield FileSystem.readAsStringAsync(file?.uri, { encoding: FileSystem.EncodingType.Base64 });
+    const base64 = yield FileSystem.readAsStringAsync(file?.uri,
+      { encoding: FileSystem.EncodingType.Base64 });
     const ext = file?.name.slice(file.name.indexOf('.') + 1);
     const data = JSON.stringify({
       name: file.name,
@@ -105,13 +114,15 @@ function* addTicketFile({ token, ticketId, file }) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
       yield put(UserActions.loginFailure(e.message));
-    } else if (e?.response?.status === 503) {
+    } else if ((e?.response?.status !== 400
+      && e?.response?.status !== 500
+      && e?.response?.status !== 401)
+      || !e?.response?.status) {
       yield put(addFileToQue({ section_name: 'tickets', file, id: ticketId }));
       yield put(PageActions.pageFailure('Файл добавлен в очередь'));
     } else {
       yield put(PageActions.pageFailure('Файл не загружен и добавлен в очередь'));
     }
-
   }
 }
 function* removeTicketFile({ token, ticketId, fileId }) {
@@ -120,6 +131,27 @@ function* removeTicketFile({ token, ticketId, fileId }) {
     yield Api.removeFile({ token, ticketId, fileId });
     yield put(removeTicketFileSuccess(fileId));
     yield put(PageActions.endLoading());
+  } catch (e) {
+    yield put(PageActions.endLoading());
+    if (e?.response?.status === 401) {
+      yield put(UserActions.loginFailure(e.message));
+    } else {
+      yield put(PageActions.pageFailure(`${e.message}`));
+    }
+  }
+}
+function* changeTicketStatus({ token, ticketId, status }) {
+  try {
+    yield put(PageActions.startLoading());
+    const newStatus = yield Api.changeStatus({ token, ticketId, status });
+    const statuses = yield Api.getStatuses({ token, ticketId });
+    const statusData = newStatus?.data?.data?.status;
+    yield put(changeTicketStatusSuccess({
+      ticketId,
+      statuses: statuses.data.data,
+      newStatus: statusData,
+    }));
+    yield put(PageActions.endLoading('Статус изменен'));
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
@@ -153,6 +185,9 @@ function* addTicketFileStart() {
 function* removeTicketFileStart() {
   yield takeLatest(TicketsActions.REMOVE_TICKET_FILE_START, removeTicketFile);
 }
+function* changeTicketStatusStart() {
+  yield takeLatest(TicketsActions.CHANGE_TICKET_STATUS_START, changeTicketStatus);
+}
 
 function* ticketsSaga() {
   yield all([
@@ -163,6 +198,7 @@ function* ticketsSaga() {
     call(getFilesStart),
     call(addTicketFileStart),
     call(removeTicketFileStart),
+    call(changeTicketStatusStart),
   ]);
 }
 

@@ -7,11 +7,10 @@ import {
   GET_CHECKS_SUCCESS,
   NULLIFY,
   UPDATE_CHECK_CHECKLIST_ITEM_START,
-  UPDATE_CHECKLIST_ITEM_SUCCESS,
   UPDATE_CHECK_SUCCESS,
   ADD_CHECK_FILE_SUCCESS,
   REMOVE_CHECK_FILE_SUCCESS,
-  GET_CHECK_FILES_SUCCESS, UPDATE_CHECK_CHECKLIST_ITEM_SUCCESS,
+  GET_CHECK_FILES_SUCCESS, UPDATE_CHECK_CHECKLIST_ITEM_SUCCESS, CHANGE_CHECK_STATUS_SUCCESS,
 } from './checks.actions';
 
 const initialState = {
@@ -45,24 +44,7 @@ const checksReducer = (state = initialState, action) => {
     case UPDATE_CHECK_CHECKLIST_ITEM_START: {
       return { ...state, checkListLoading: true };
     }
-    case UPDATE_CHECKLIST_ITEM_SUCCESS: {
-      const { newCheckListItem, checkTodoId, todoItemId } = action.checkListItem;
-      const newTodos = [...state.current_check?.check_todos];
-      for (let i = 0; i < newTodos.length; i++) {
-        if (newTodos[i].id === checkTodoId) {
-          for (let j = 0; j < newTodos[i]?.check_todo_items?.length; j++) {
-            if (newTodos[i].check_todo_items[j].id === todoItemId) {
-              newTodos[i].check_todo_items[j] = newCheckListItem;
-            }
-          }
-        }
-      }
-      return {
-        ...state,
-        current_check: { ...state.current_check, entity_task_todos: newTodos },
-        checkListLoading: false,
-      };
-    }
+
     case UPDATE_CHECK_SUCCESS: {
       return { ...state };
     }
@@ -113,6 +95,14 @@ const checksReducer = (state = initialState, action) => {
         current_check: { ...state.current_check, entity_task_todos: newTodos },
         checkListLoading: false,
       };
+    }
+    case CHANGE_CHECK_STATUS_SUCCESS: {
+      const { newStatus, checkId } = action;
+      const newChecks = state?.items
+        ?.map((item) => (item.id !== checkId ? item : { ...item, status: newStatus }));
+      const newCurrentTicket = newChecks
+        .filter((item) => item.id === state.current_check?.id)?.[0] ?? state.current_check;
+      return { ...state, items: newChecks, current_check: newCurrentTicket };
     }
     case GET_CHECK_FILES_SUCCESS: {
       return {

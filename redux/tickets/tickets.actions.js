@@ -1,4 +1,3 @@
-
 export const GET_TICKETS_SUCCESS = 'GET_TICKETS_SUCCESS';
 export const GET_TICKETS_START = 'GET_TICKETS_START';
 export const GET_CURRENT_TICKET_START = 'GET_CURRENT_TICKET_START';
@@ -17,7 +16,8 @@ export const ADD_TICKET_FILE_START = 'ADD_TICKET_FILE_START';
 export const ADD_TICKET_FILE_SUCCESS = 'ADD_TICKET_FILE_SUCCESS';
 export const REMOVE_TICKET_FILE_START = 'REMOVE_TICKET_FILE_START';
 export const REMOVE_TICKET_FILE_SUCCESS = 'REMOVE_TICKET_FILE_SUCCESS';
-
+export const CHANGE_TICKET_STATUS_START = 'CHANGE_TICKET_STATUS_START';
+export const CHANGE_TICKET_STATUS_SUCCESS = 'CHANGE_TICKET_STATUS_SUCCESS';
 
 export const getTicketsSuccess = (tickets) => ({
   type: GET_TICKETS_SUCCESS,
@@ -110,4 +110,24 @@ export const getTicketFilesStart = (token, ticket_id) => ({
 export const getTicketFilesSuccess = (files) => ({
   type: GET_TICKET_FILES_SUCCESS,
   files,
+});
+export const changeTicketStatusStart = ({
+  token,
+  ticketId,
+  status,
+}) => ({
+  type: CHANGE_TICKET_STATUS_START,
+  token,
+  ticketId,
+  status,
+});
+export const changeTicketStatusSuccess = ({
+  ticketId,
+  statuses,
+  newStatus,
+}) => ({
+  type: CHANGE_TICKET_STATUS_SUCCESS,
+  ticketId,
+  statuses,
+  newStatus,
 });

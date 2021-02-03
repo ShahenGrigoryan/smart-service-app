@@ -1,5 +1,5 @@
 import {
-  put, takeLatest, all, call,takeEvery
+  put, takeLatest, all, call, takeEvery,
 } from 'redux-saga/effects';
 import * as FileSystem from 'expo-file-system';
 import * as Api from '../../api/checks';
@@ -7,7 +7,7 @@ import * as ChecksActions from './checks.actions';
 import * as PageActions from '../pages/pages.actions';
 import * as UserActions from '../user/user.actions';
 import {
-  addCheckFileSuccess,
+  addCheckFileSuccess, changeCheckStatusSuccess,
   removeCheckFileSuccess,
   updateCheckCheckListItemSuccess,
   updateCheckSuccess,
@@ -94,7 +94,8 @@ function* getChecksFiles({ token, check_id }) {
 function* addCheckFile({ token, checkId, file }) {
   try {
     yield put(PageActions.startLoading());
-    const base64 = yield FileSystem.readAsStringAsync(file?.uri, { encoding: FileSystem.EncodingType.Base64 });
+    const base64 = yield FileSystem
+      .readAsStringAsync(file?.uri, { encoding: FileSystem.EncodingType.Base64 });
     const ext = file?.name.slice(file.name.indexOf('.') + 1);
     const data = JSON.stringify({
       name: file.name,
@@ -108,7 +109,10 @@ function* addCheckFile({ token, checkId, file }) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
       yield put(UserActions.loginFailure(e.message));
-    } else if (e?.response?.status === 503) {
+    } else if ((e?.response?.status !== 400
+      && e?.response?.status !== 500
+      && e?.response?.status !== 401)
+      || !e?.response?.status) {
       yield put(addFileToQue({ section_name: 'entity_tasks', file, id: checkId }));
       yield put(PageActions.pageFailure('Файл добавлен в очередь'));
     } else {
@@ -151,6 +155,23 @@ function* updateCheckCheckListItem({
     yield put(PageActions.pageFailure(`${e.message}`));
   }
 }
+function* changeCheckStatus({ token, checkId, status }) {
+  try {
+    yield put(PageActions.startLoading());
+    const newStatus = yield Api.changeCheckStatus({ token, checkId, status });
+    console.log('new status', newStatus);
+    const statusData = newStatus?.data?.data?.status;
+    yield put(changeCheckStatusSuccess({ checkId, newStatus: statusData }));
+    yield put(PageActions.endLoading('Статус изменен'));
+  } catch (e) {
+    yield put(PageActions.endLoading());
+    if (e?.response?.status === 401) {
+      yield put(UserActions.loginFailure(e.message));
+    } else {
+      yield put(PageActions.pageFailure(`${e.message}`));
+    }
+  }
+}
 
 function* getChecksStart() {
   yield takeLatest(ChecksActions.GET_CHECKS_START, getChecks);
@@ -179,6 +200,9 @@ function* removeCheckFileStart() {
 function* updateCheckCheckListItemStart() {
   yield takeLatest(ChecksActions.UPDATE_CHECK_CHECKLIST_ITEM_START, updateCheckCheckListItem);
 }
+function* changeCheckStatusStart() {
+  yield takeLatest(ChecksActions.CHANGE_CHECK_STATUS_START, changeCheckStatus);
+}
 
 function* checksSaga() {
   yield all([
@@ -190,6 +214,7 @@ function* checksSaga() {
     call(addCheckFileStart),
     call(removeCheckFileStart),
     call(updateCheckCheckListItemStart),
+    call(changeCheckStatusStart),
   ]);
 }
 

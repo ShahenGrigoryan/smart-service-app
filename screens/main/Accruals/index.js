@@ -15,7 +15,6 @@ import PageWrapper from '../../../components/Containers/PageWrapper';
 
 const Accruals = ({ navigation }) => {
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.pages.loading);
   const date = new Date();
   const {
     token, user_id, payrolls, penalties,

@@ -20,7 +20,6 @@ import {
 } from '../../../../redux/tasks/tasks.actions';
 import Comment from '../../../../components/UI/Comment/Comment';
 import PageWrapper from '../../../../components/Containers/PageWrapper';
-import { addCheckFileStart } from '../../../../redux/checks/checks.actions';
 import { addFileToQue, uploadFilesInQue } from '../../../../redux/files_que/files_que.reducer';
 
 const TaskCard = ({ navigation, route }) => {

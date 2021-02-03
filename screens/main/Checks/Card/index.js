@@ -11,14 +11,13 @@ import AppCardStyles from '../../Applications/Card/styles';
 import CardStyles from '../../../../globalStyles/card';
 import CameraWrapper from '../../../../components/Containers/CameraWrapper';
 import {
-  addCheckFileStart,
+  addCheckFileStart, changeCheckStatusStart,
   createCheckCommentStart,
   getCurrentCheckStart,
 } from '../../../../redux/checks/checks.actions';
 import { getAssigneeObject, getDate, getTime } from '../../../../utils';
 import Comment from '../../../../components/UI/Comment/Comment';
 import PageWrapper from '../../../../components/Containers/PageWrapper';
-import { changeCheckStatus } from '../../../../api/checks';
 import CheckStatusButton from '../../../../components/UI/CheckStatusButton';
 import { addFileToQue, uploadFilesInQue } from '../../../../redux/files_que/files_que.reducer';
 
@@ -81,24 +80,11 @@ const CheckCard = ({ navigation, route }) => {
   useEffect(() => {
     dispatch(getCurrentCheckStart(token, checkId));
   }, []);
-  const [status, setStatus] = useState(current_check?.status);
-  useEffect(() => {
-    setStatus(current_check?.status);
-  }, [current_check]);
-  const changeStatus = async () => {
-    try {
-      const newStatus = current_check?.status === 'processing'
-        ? { status: 'finished' } : current_check?.status === 'pending'
-          ? { status: 'processing' } : null;
-      await changeCheckStatus({
-        token,
-        checkId: current_check.id,
-        status: newStatus,
-      });
-      setStatus(newStatus.status);
-    } catch (e) {
-      Toast.show({ text: e.message, type: 'danger', position: 'top' });
-    }
+  const changeStatus = () => {
+    const newStatus = current_check?.status === 'processing'
+      ? { status: 'finished' } : current_check?.status === 'pending'
+        ? { status: 'processing' } : null;
+    dispatch(changeCheckStatusStart({ token, checkId, status: newStatus }));
   };
   const files_in_que = useSelector((state) => state.files_in_que);
   useEffect(() => {
@@ -119,7 +105,7 @@ const CheckCard = ({ navigation, route }) => {
           <TouchableOpacity style={AppCardStyles.backButton} onPress={() => navigation.goBack()}>
             <MaterialIcons name="arrow-back" size={30} color="black" />
           </TouchableOpacity>
-          <CheckStatusButton status={status} changeStatus={changeStatus} />
+          <CheckStatusButton status={current_check?.status} changeStatus={changeStatus} />
         </View>
 
         <View style={{ ...AppCardStyles.card }}>

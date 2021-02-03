@@ -3,7 +3,7 @@ import { baseUrl } from '../api-config';
 import { get } from '../helpers';
 
 export const getChecks = async (token, params) => {
-  const checksUrl = `${baseUrl}/entity_tasks`;
+  const checksUrl = `${baseUrl}/entity_tasks?status[]=pending&status[]=processing`;
   return get(token, checksUrl, params);
 };
 
@@ -82,10 +82,17 @@ export const removeFile = ({ token, checkId, fileId }) => {
 };
 export const changeCheckStatus = ({ token, checkId, status }) => {
   const url = `${baseUrl}/entity_tasks/${checkId}/status`;
-  return axios.put(url, JSON.stringify(status), {
+  const data = JSON.stringify(status);
+
+  const config = {
+    method: 'put',
+    url,
     headers: {
       Authorization: `Bearer: ${token}`,
-      'Content-type': 'application/json',
+      'Content-Type': 'application/json',
     },
-  });
+    data,
+  };
+
+  return axios(config);
 };

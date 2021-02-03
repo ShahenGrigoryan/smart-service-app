@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Drawer from 'react-native-drawer';
 import Login from './screens/main/Login';
 import Desktop from './screens/main/Desktop';
@@ -20,7 +20,6 @@ import CheckLists from './screens/main/CheckLists';
 import Accruals from './screens/main/Accruals';
 import TaskFiles from './screens/main/Tasks/Files';
 import CheckFiles from './screens/main/Checks/Files';
-import { getUserStart } from './redux/user/user.actions';
 import ApplicationFiles from './screens/main/Applications/Files';
 
 const drawerStyles = {

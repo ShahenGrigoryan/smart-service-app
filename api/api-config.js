@@ -1,1 +1,1 @@
-export const baseUrl = 'https://apitest.mysmartservice.com/api/v1';
+export const baseUrl = 'https://api.terra-security.ru/api/v1';

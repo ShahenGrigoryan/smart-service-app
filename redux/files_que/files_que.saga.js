@@ -19,19 +19,31 @@ function* uploadFiles({ files_in_que, token }) {
         for (let j = 0; j < files_in_que[sections[i]].length; j++) {
           switch (sections[i]) {
             case 'tasks': {
-              const payload = { file: files_in_que[[sections[i]]][j]?.file, taskId: files_in_que[[sections[i]]][j].id, token };
+              const payload = {
+                file: files_in_que[[sections[i]]][j]?.file,
+                taskId: files_in_que[[sections[i]]][j].id,
+                token,
+              };
               yield put(addTaskFileStart(payload));
               yield put(removeFileFromQue({ file: payload.file, section_name: 'tasks' }));
               break;
             }
             case 'tickets': {
-              const payload = { file: files_in_que[[sections[i]]][j]?.file, ticketId: files_in_que[[sections[i]]][j].id, token };
+              const payload = {
+                file: files_in_que[[sections[i]]][j]?.file,
+                ticketId: files_in_que[[sections[i]]][j].id,
+                token,
+              };
               yield put(addTicketFileStart(payload));
               yield put(removeFileFromQue({ file: payload.file, section_name: 'tickets' }));
               break;
             }
             case 'entity_tasks': {
-              const payload = { file: files_in_que[[sections[i]]][j]?.file, checkId: files_in_que[[sections[i]]][j].id, token };
+              const payload = {
+                file: files_in_que[[sections[i]]][j]?.file,
+                checkId: files_in_que[[sections[i]]][j].id,
+                token,
+              };
               yield put(addCheckFileStart(payload));
               yield put(removeFileFromQue({ file: payload.file, section_name: 'entity_tasks' }));
               break;

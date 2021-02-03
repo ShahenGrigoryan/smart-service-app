@@ -2,7 +2,6 @@ import {
   put, takeLatest, all, call, takeEvery,
 } from 'redux-saga/effects';
 import * as FileSystem from 'expo-file-system';
-import { Toast } from 'native-base';
 import * as Api from '../../api/tasks';
 import * as TasksActions from './tasks.actions';
 import * as PageActions from '../pages/pages.actions';
@@ -102,7 +101,7 @@ function* updateTask({ token, body, id }) {
     yield put(PageActions.startLoading());
     const updatedTask = yield Api.updateTask({ token, body, id });
     yield put(updateTaskSuccess({ data: updatedTask.data.data, id }));
-    yield put(PageActions.endLoading());
+    yield put(PageActions.endLoading('Статус изменен'));
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
@@ -132,7 +131,10 @@ function* addTaskFile({ token, taskId, file }) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
       yield put(UserActions.loginFailure(e.message));
-    } else if (e?.response?.status === 503) {
+    } else if ((e?.response?.status !== 400
+      && e?.response?.status !== 500
+      && e?.response?.status !== 401)
+      || !e?.response?.status) {
       yield put(addFileToQue({ section_name: 'tasks', file, id: taskId }));
       yield put(PageActions.pageFailure('Файл добавлен в очередь'));
     } else {

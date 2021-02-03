@@ -3,7 +3,7 @@ import { baseUrl } from '../api-config';
 import { get, post, put } from '../helpers';
 
 export const getTickets = async (token, params) => {
-  const ticketsUrl = `${baseUrl}/tickets`;
+  const ticketsUrl = `${baseUrl}/tickets?status[]=pending&status[]=processing`;
   return get(token, ticketsUrl, params);
 };
 
@@ -52,11 +52,21 @@ export const removeFile = ({ token, ticketId, fileId }) => {
 };
 
 export const getStatuses = ({ token, ticketId }) => {
-  const url = `https://apitest.mysmartservice.com/api/v1/tickets/${ticketId}/statuses`;
+  const url = `${baseUrl}/tickets/${ticketId}/statuses`;
   return get(token, url);
 };
 
 export const changeStatus = ({ token, ticketId, status }) => {
-  const url = `https://apitest.mysmartservice.com/api/v1/tickets/${ticketId}/status`;
-  return axios.put(url, JSON.stringify(status), { headers: { Authorization: `Bearer: ${token}` } });
+  const url = `${baseUrl}/tickets/${ticketId}/status`;
+  const data = JSON.stringify({ status: status.id });
+  const config = {
+    method: 'put',
+    url,
+    headers: {
+      Authorization: `Bearer: ${token}`,
+      'Content-Type': 'application/json',
+    },
+    data,
+  };
+  return axios(config);
 };

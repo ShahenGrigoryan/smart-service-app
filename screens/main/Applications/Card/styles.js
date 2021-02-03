@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 5,
     position: 'relative',
-    zIndex: 0
+    zIndex: 0,
   },
   title: {
     fontSize: 17,
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingHorizontal: 5,
     paddingVertical: 5,
-    zIndex:50
+    zIndex: 50,
   },
   addButton: {
     height: 30,

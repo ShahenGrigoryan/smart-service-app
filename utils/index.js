@@ -55,7 +55,7 @@ export const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate(
 
 export const getParamsText = (paramsObj) => {
   if (!paramsObj) return '';
-  let paramsText = '?';
+  let paramsText = '&';
   if (paramsObj) {
     const keys = Object.keys(paramsObj);
     const values = Object.values(paramsObj);
