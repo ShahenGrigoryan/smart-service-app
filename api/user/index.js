@@ -23,7 +23,6 @@ function getFormDataOptions(url = '', data = {}) {
 
 export const login = (loginInfo) => {
   const loginUrl = `${baseUrl}/users/auth_user`;
-  console.log(loginUrl);
   return axios(getFormDataOptions(loginUrl, loginInfo));
 };
 

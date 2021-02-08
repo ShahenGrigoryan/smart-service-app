@@ -62,21 +62,8 @@ const TicketCard = ({ navigation, route }) => {
     }
   };
   useEffect(() => {
-    console.log(current_ticket.statuses);
-  }, []);
-  useEffect(() => {
     dispatch(getCurrentTicketStart(token, ticket.id));
   }, []);
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const statusesData = await getStatuses({ token, ticketId: current_ticket.id });
-  //       setStatuses(statusesData?.data?.data);
-  //     } catch (e) {
-  //       Toast.show({ text: 'Что-то пошло не так', type: 'danger' });
-  //     }
-  //   })();
-  // }, []);
   const changeTicketStatus = async (index) => {
     dispatch(changeTicketStatusStart({
       token,

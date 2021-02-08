@@ -159,7 +159,6 @@ function* changeCheckStatus({ token, checkId, status }) {
   try {
     yield put(PageActions.startLoading());
     const newStatus = yield Api.changeCheckStatus({ token, checkId, status });
-    console.log('new status', newStatus);
     const statusData = newStatus?.data?.data?.status;
     yield put(changeCheckStatusSuccess({ checkId, newStatus: statusData }));
     yield put(PageActions.endLoading('Статус изменен'));

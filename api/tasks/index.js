@@ -13,7 +13,7 @@ export const getUser = async (token, userId) => {
 };
 
 export const getTasks = async (token, params) => {
-  const tasksUrl = `${baseUrl}/tasks${params}`;
+  const tasksUrl = `${baseUrl}/tasks${params ?? '?status[]=pending&status[]=processing'}`;
   return get(token, tasksUrl);
 };
 

@@ -94,7 +94,6 @@ const ticketsReducer = (state = initialState, action) => {
     }
     case CHANGE_TICKET_STATUS_SUCCESS: {
       const { statuses, newStatus, ticketId } = action;
-      console.log('newStatus', newStatus);
       const newTickets = state?.items
         ?.map((item) => (item.id !== ticketId ? item : { ...item, status: newStatus, statuses }));
       const newCurrentTicket = newTickets

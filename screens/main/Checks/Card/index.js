@@ -58,7 +58,7 @@ const CheckCard = ({ navigation, route }) => {
         addFile(file);
       }
     } catch (e) {
-      console.log('error==', e);
+      console.log(e);
     }
   };
   const createComment = () => {

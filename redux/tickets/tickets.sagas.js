@@ -35,7 +35,6 @@ function* getCurrentTicket({ token, id, filter }) {
     yield put(PageActions.startLoading());
     const currentTicket = yield Api.getCurrentTicket(token, id, filter?.params);
     const statuses = yield Api.getStatuses({ token, ticketId: id });
-    console.log('statuses', statuses);
     yield put(TicketsActions.getCurrentTicketSuccess({
       ...currentTicket?.data?.data,
       statuses: statuses?.data?.data,
@@ -106,7 +105,9 @@ function* addTicketFile({ token, ticketId, file }) {
       name: file.name,
       content_type: `application/${ext}`,
       attachment: `data:application/${ext};base64,${base64}`,
+      attachment_type: 1,
     });
+    console.log('data', data);
     const newFile = yield Api.addFile({ token, ticketId, data });
     yield put(addTicketFileSuccess(newFile?.data?.data ? newFile.data.data : newFile));
     yield put(PageActions.endLoading());
