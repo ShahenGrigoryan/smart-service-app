@@ -7,6 +7,7 @@ import { setNotFirst } from '../visit/visit.actions';
 import { getPayrollsSuccess, getUserSuccess, logoutSuccess } from './user.actions';
 import { nullify } from '../tasks/tasks.actions';
 import * as PageActions from '../pages/pages.actions';
+import { nullifyFiles } from '../files_que/files_que.reducer';
 
 function* login(action) {
   yield put(PageActions.startLoading());
@@ -30,8 +31,10 @@ function* logout({ token }) {
     yield Api.logout(token);
     yield put(logoutSuccess());
     yield put(nullify());
+    yield put(nullifyFiles());
   } catch (e) {
-    yield put(PageActions.pageFailure(e.message));
+    yield put(nullifyFiles());
+    yield put(PageActions.pageFailure('Что-то пошло не так'));
   }
 }
 
@@ -48,9 +51,9 @@ function* getPayrolls({
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure('Время сессии истекло!'));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(e.message));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -62,12 +65,12 @@ function* getUser({ token, user_id }) {
     yield put(getUserSuccess(user?.data?.data));
     yield put(PageActions.endLoading());
   } catch (e) {
-    if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure('Время сессии истекло!'));
-    } else {
-      yield put(PageActions.pageFailure(e.message));
-    }
     yield put(PageActions.endLoading());
+    if (e?.response?.status === 401) {
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
+    } else {
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
+    }
   }
 }
 

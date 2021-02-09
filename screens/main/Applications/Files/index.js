@@ -32,7 +32,7 @@ const ApplicationFiles = ({ navigation, route }) => {
           <Text style={CheckListStyles.numberText}>
             №
             {' '}
-            {data.id}
+            {data?.number ?? data.id}
           </Text>
         </View>
       </View>

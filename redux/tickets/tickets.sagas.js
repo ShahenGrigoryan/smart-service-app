@@ -12,7 +12,6 @@ import {
   removeTicketFileSuccess,
   updateTicketSuccess,
 } from './tickets.actions';
-import { addFileToQue } from '../files_que/files_que.reducer';
 
 function* getTickets({ token, filter }) {
   yield put(PageActions.startLoading());
@@ -23,9 +22,9 @@ function* getTickets({ token, filter }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(e.message));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -43,9 +42,9 @@ function* getCurrentTicket({ token, id, filter }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(e.message));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -55,10 +54,11 @@ function* createTicketComment({ token, ticketId, comment }) {
     const newComment = yield Api.createTicketComment(token, ticketId, comment);
     yield put(TicketsActions.createTicketCommentSuccess(newComment.data.data));
   } catch (e) {
-    if (e.response.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+    yield put(PageActions.endLoading());
+    if (e?.response?.status === 401) {
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(e.message));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -72,9 +72,9 @@ function* updateTicket({ token, body, id }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(e.message));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -88,9 +88,9 @@ function* getTicketFiles({ token, ticket_id }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(`${e.message} get task files`));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -107,22 +107,15 @@ function* addTicketFile({ token, ticketId, file }) {
       attachment: `data:application/${ext};base64,${base64}`,
       attachment_type: 1,
     });
-    console.log('data', data);
     const newFile = yield Api.addFile({ token, ticketId, data });
     yield put(addTicketFileSuccess(newFile?.data?.data ? newFile.data.data : newFile));
     yield put(PageActions.endLoading());
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
-    } else if ((e?.response?.status !== 400
-      && e?.response?.status !== 500
-      && e?.response?.status !== 401)
-      || !e?.response?.status) {
-      yield put(addFileToQue({ section_name: 'tickets', file, id: ticketId }));
-      yield put(PageActions.pageFailure('Файл добавлен в очередь'));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure('Файл не загружен и добавлен в очередь'));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -135,9 +128,9 @@ function* removeTicketFile({ token, ticketId, fileId }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(`${e.message}`));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -156,9 +149,9 @@ function* changeTicketStatus({ token, ticketId, status }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(`${e.message}`));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }

@@ -3,7 +3,8 @@ import { baseUrl } from '../api-config';
 import { get, post, put } from '../helpers';
 
 export const getTickets = async (token, params) => {
-  const ticketsUrl = `${baseUrl}/tickets?status[]=pending&status[]=processing`;
+  const filter = params ?? '?status[]=pending&status[]=processing';
+  const ticketsUrl = `${baseUrl}/tickets${filter}`;
   return get(token, ticketsUrl, params);
 };
 

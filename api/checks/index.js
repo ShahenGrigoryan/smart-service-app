@@ -3,7 +3,8 @@ import { baseUrl } from '../api-config';
 import { get } from '../helpers';
 
 export const getChecks = async (token, params) => {
-  const checksUrl = `${baseUrl}/entity_tasks?status[]=pending&status[]=processing`;
+  const filter = params ?? '?status[]=pending&status[]=processing';
+  const checksUrl = `${baseUrl}/entity_tasks${filter}`;
   return get(token, checksUrl, params);
 };
 

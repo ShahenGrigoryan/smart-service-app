@@ -2,12 +2,12 @@ import {
   put, takeLatest, all, call,
 } from 'redux-saga/effects';
 import * as PageActions from '../pages/pages.actions';
-import * as UserActions from '../user/user.actions';
 import {
   GET_DESKTOP_ITEMS_START, getDesktopItemsSuccess,
 } from './desktop.actions';
 import { getDesktopItems } from '../../api/desktop';
 import { desktopItemsSort } from '../../utils';
+import * as UserActions from '../user/user.actions';
 
 function* getItems({ token, filter }) {
   yield put(PageActions.startLoading());
@@ -24,9 +24,9 @@ function* getItems({ token, filter }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(e.message));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }

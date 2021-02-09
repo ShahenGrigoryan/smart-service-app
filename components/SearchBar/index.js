@@ -27,7 +27,7 @@ const SearchBar = () => {
     if (!search.open) {
       setSearch({ ...search, open: true });
     } else {
-      const filter = { params: { search: search.value } };
+      const filter = { params: `?status[]=pending&status[]=processing&search=${search.value}` };
       dispatch(getItems(token, filter));
     }
   };

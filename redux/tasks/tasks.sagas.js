@@ -12,7 +12,7 @@ import {
   updateTaskCheckListItemSuccess,
   updateTaskSuccess,
 } from './tasks.actions';
-import { addFileToQue, removeFileFromQue } from '../files_que/files_que.reducer';
+import { removeFileFromQue } from '../files_que/files_que.reducer';
 
 function* getTasks({ token, filter }) {
   yield put(PageActions.startLoading());
@@ -23,9 +23,9 @@ function* getTasks({ token, filter }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(`${e.message} getTasks__,${filter}`));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -39,9 +39,9 @@ function* getCurrentTask({ token, id }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(`${e.message} getCurrentTask`));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -55,9 +55,9 @@ function* getTaskFiles({ token, task_id }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(`${e.message} get task files`));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -68,10 +68,11 @@ function* createTaskComment({ token, taskId, comment }) {
     yield Api.getTaskComments(token, taskId);
     yield put(TasksActions.createTaskCommentSuccess(newComment.data.data));
   } catch (e) {
-    if (e.response.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+    yield put(PageActions.endLoading());
+    if (e?.response?.status === 401) {
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(`${e.message} createTaskComment`));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -92,7 +93,11 @@ function* updateCheckListItem({
     yield put(PageActions.endLoading());
   } catch (e) {
     yield put(PageActions.endLoading());
-    yield put(PageActions.pageFailure(`${e.message} update saga error`));
+    if (e?.response?.status === 401) {
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
+    } else {
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
+    }
   }
 }
 
@@ -105,9 +110,9 @@ function* updateTask({ token, body, id }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(`${e.message} updateTask`));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -130,15 +135,9 @@ function* addTaskFile({ token, taskId, file }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
-    } else if ((e?.response?.status !== 400
-      && e?.response?.status !== 500
-      && e?.response?.status !== 401)
-      || !e?.response?.status) {
-      yield put(addFileToQue({ section_name: 'tasks', file, id: taskId }));
-      yield put(PageActions.pageFailure('Файл добавлен в очередь'));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(`${e.message}`));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
@@ -151,9 +150,9 @@ function* removeTaskFile({ token, taskId, fileId }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(`${e.message}`));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }

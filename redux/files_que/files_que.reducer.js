@@ -1,6 +1,7 @@
 export const ADD_FILE_TO_QUE = 'ADD_FILE_TO_QUE';
 export const REMOVE_FILE_FROM_QUE = 'REMOVE_FILE_FROM_QUE';
 export const UPLOAD_FILES_IN_QUE = 'UPLOAD_FILES_IN_QUE';
+export const NULLIFY_FILES = 'NULLIFY_FILES';
 
 export const addFileToQue = ({ section_name, file, id }) => ({
   type: ADD_FILE_TO_QUE,
@@ -18,6 +19,9 @@ export const removeFileFromQue = ({ file, section_name }) => ({
   file,
   section_name,
 });
+export const nullifyFiles = () => ({
+  type: NULLIFY_FILES,
+});
 
 const initialState = {
   tasks: [],
@@ -34,8 +38,14 @@ const filesQueReducer = (state = initialState, action) => {
     case REMOVE_FILE_FROM_QUE: {
       const { section_name, file } = action;
       const newQue = state[section_name].filter((item) => item.file.uri !== file.uri);
-
       return { ...state, [section_name]: newQue };
+    }
+    case NULLIFY_FILES: {
+      return {
+        tasks: [],
+        tickets: [],
+        entity_tasks: [],
+      };
     }
     default: {
       return state;

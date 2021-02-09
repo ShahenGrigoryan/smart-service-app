@@ -6,6 +6,7 @@ import { TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 import SideMenuStyles from '../../globalStyles/sideMenu';
 import HeaderStyles from './styles';
 import ComponentsBackground from '../Containers/ComponentsBackground';
@@ -20,18 +21,12 @@ const desktopFilters = [
   {
     name: 'Сегодня',
     id: 'today',
-    params: {
-      startDate: new Date(new Date(Date.now()).setHours(0, 0, 0, 0)).toISOString(),
-      endDate: new Date(new Date(Date.now()).setHours(23, 59, 0, 0)).toISOString(),
-    },
+    params: `?status[]=pending&status[]=processing&startDate=${moment().startOf('day').toISOString()}&endDate=${moment().endOf('day').toISOString()}`,
   },
   {
     name: 'Alarm',
     id: 'alarm',
-    params: {
-      startDate: 0,
-      endFinishDate: new Date(new Date(Date.now()).setHours(23, 59, 0, 0)).toISOString(),
-    },
+    params: `?status[]=pending&status[]=processing&endFinishDate=${moment().endOf('day').toISOString()}`,
   },
 ];
 

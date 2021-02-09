@@ -3,11 +3,11 @@ import {
 } from 'redux-saga/effects';
 import NetInfo from '@react-native-community/netinfo';
 import * as PageActions from '../pages/pages.actions';
-import * as UserActions from '../user/user.actions';
 import { removeFileFromQue, UPLOAD_FILES_IN_QUE } from './files_que.reducer';
 import { addTaskFileStart } from '../tasks/tasks.actions';
 import { addTicketFileStart } from '../tickets/tickets.actions';
 import { addCheckFileStart } from '../checks/checks.actions';
+import * as UserActions from '../user/user.actions';
 
 function* uploadFiles({ files_in_que, token }) {
   yield put(PageActions.startLoading());
@@ -59,9 +59,9 @@ function* uploadFiles({ files_in_que, token }) {
   } catch (e) {
     yield put(PageActions.endLoading());
     if (e?.response?.status === 401) {
-      yield put(UserActions.loginFailure(e.message));
+      yield put(UserActions.loginFailure('Время сессии истекло.'));
     } else {
-      yield put(PageActions.pageFailure(`${e.message} adding file error`));
+      yield put(PageActions.pageFailure('Что-то пошло не так.'));
     }
   }
 }
