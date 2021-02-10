@@ -16,6 +16,9 @@ import { getDesktopItemsStart } from '../../redux/desktop/desktop.actions';
 import { getTasksStart } from '../../redux/tasks/tasks.actions';
 import SearchBar from '../SearchBar';
 
+const startDate = new Date(Date.now());
+startDate.setFullYear(startDate.getFullYear() - 1);
+
 const desktopFilters = [
   { name: 'Все', id: 'all', params: null },
   {
@@ -26,7 +29,7 @@ const desktopFilters = [
   {
     name: 'Alarm',
     id: 'alarm',
-    params: `?status[]=pending&status[]=processing&endFinishDate=${moment().endOf('day').toISOString()}`,
+    params: `?status[]=pending&status[]=processing&startDate=${startDate.toISOString()}&endDate=${moment().endOf('day').toISOString()}`,
   },
 ];
 
